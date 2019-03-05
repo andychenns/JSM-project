@@ -13,8 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(readr)
 library(tidyverse)
-data_2017<- read_csv("Data/NYCHVS 2017 Occupied File for ASA Challenge_CSV.csv", 
-    skip = 1)
+data_2017<- read_csv("JSM/Data/NYCHVS 2017 Occupied File for ASA Challenge_CSV.csv", skip = 1)
 
 # It seems like all the houses are occupied
 summary(data_2017$`Record Type`) 
