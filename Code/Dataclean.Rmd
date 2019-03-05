@@ -1,0 +1,25 @@
+---
+title: "Data cleaning"
+author: "LonghaoChen"
+date: "3/4/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(readr)
+data_2017<- read_csv("Data/NYCHVS 2017 Occupied File for ASA Challenge_CSV.csv", 
+    skip = 1)
+
+# It seems like all the houses are occupied
+summary(data_2017$`Record Type`) 
+
+#Most houses are located in 2 Brooklyn and 3 Manhattan
+table(data_2017$Borough)
+
+```
+
