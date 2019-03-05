@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(readr)
+library(tidyverse)
 data_2017<- read_csv("Data/NYCHVS 2017 Occupied File for ASA Challenge_CSV.csv", 
     skip = 1)
 
@@ -20,6 +21,9 @@ summary(data_2017$`Record Type`)
 
 #Most houses are located in 2 Brooklyn and 3 Manhattan
 table(data_2017$Borough)
+
+#Since we are only interested in first/second generation immigrants. Other obervations are ruled out from the data. Here if the code is greater than 9, that means the person is born outside of united states.
+df<- data_2017 %>% filter((`Place of Householder's Birth` >= 9.5) | (`Place of Householder's Father's Birth` >= 9.5)|`Place of Householder's Mother's Birth` >= 9.5)
 
 ```
 
