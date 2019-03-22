@@ -1,0 +1,25 @@
+---
+title: "Data_cleaning"
+author: "Si"
+date: "3/21/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+# for some reason, I cannot run Longhao's code on my computer, so I just create my own cleaning and EDA rmd
+
+library(readr)
+# check useful variables
+file2008 <- read_csv("Data/NYCHVS 2008 Occupied File for ASA Challenge_CSV.csv")
+file2011 <- read_csv("Data/NYCHVS 2011 Occupied File for ASA Challenge_CSV.csv")
+
+# Variables confirmed and try to delete other variables to create a smaller, targeted dataframe
+
+# to be committed
+
+```
