@@ -13,8 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(readr)
 library(tidyverse)
-data_2017<- read_csv("JSM/Data/NYCHVS 2017 Occupied File for ASA Challenge_CSV.csv", skip = 1)
-
+data_2017<- read_csv("NYCHVS 2017 Occupied File for ASA Challenge_CSV.csv", skip = 1)
+data_2014<- read_csv("NYCHVS 2014 Occupied File for ASA Challenge_CSV.csv", skip = 1)
 # It seems like all the houses are occupied
 summary(data_2017$`Record Type`) 
 
@@ -22,10 +22,81 @@ summary(data_2017$`Record Type`)
 table(data_2017$Borough)
 
 #Since we are only interested in first/second generation immigrants. Other obervations are ruled out from the data. Here if the code is greater than 9, that means the person is born outside of united states.
-df<- data_2017 %>% filter((`Place of Householder's Birth` >= 9.5) | (`Place of Householder's Father's Birth` >= 9.5)|`Place of Householder's Mother's Birth` >= 9.5)
+df2017 <- data_2017 %>% filter((`Place of Householder's Birth` >= 9.5) | (`Place of Householder's Father's Birth` >= 9.5)|`Place of Householder's Mother's Birth` >= 9.5)
 
-#I am not sure what replicate is so I delete columns taht contain the word replicate
-df<-df[, -grep("Replicate", colnames(df))]
 
+df2014 <- data_2014 %>% filter((`Place of Householder's Birth` >= 9.5) | (`Place of Householder's Father's Birth` >= 9.5)|`Place of Householder's Mother's Birth` >= 9.5)
+
+#I am not sure what replicate is so I delete columns that contain the word replicate
+df2017 <- df2017[, -grep("Replicate", colnames(df2017))]
+```
+
+```{r}
+#Below is the exploratory data analysis
+#Age distribution
+ggplot(df2014) +
+  geom_density(aes(df2014$`Householder's Age Recode`))
+
+ggplot(df2017) +
+  geom_density(aes(df2017$`Householder's Age Recode`))
+
+#Sex ratio
+ggplot(df2014) +
+  geom_bar(aes(df2014$`Householder's Sex`))
+
+ggplot(df2017) +
+  geom_bar(aes(df2017$`Householder's Sex`))
+
+#Race distribution
+ggplot(df2014) +
+  geom_histogram(aes(df2014$`Householder's Race`))
+
+ggplot(df2017) +
+  geom_bar(aes(df2017$`Householder's Race`))
+##Most are white, then follow with black and chinese and korean
+
+#Year move in
+ggplot(df2014) +
+  geom_density(aes(df2014$`Year Householder Moved into Unit`))
+
+ggplot(df2017) +
+  geom_density(aes(df2017$`Year Householder Moved into Unit`))
+
+#Rent price
+a<-df2017[df2017$`Monthly contract rent`<50000,]
+a$Borough <-as.factor(a$Borough)
+ggplot(a) +
+  geom_violin(aes(x=Borough,y= a$`Monthly contract rent`))
+
+b<-df2014[df2014$`Monthly contract rent`<50000,]
+b$Borough <-as.factor(b$Borough)
+ggplot(b) +
+  geom_violin(aes(x=Borough,y= b$`Monthly contract rent`))
+
+#Birthplace of household
+c<-df2014[df2014$`Place of Householder's Birth`<50,]
+ggplot(c)+
+  geom_bar(aes(c$`Place of Householder's Birth`))
+
+d<-df2017[df2017$`Place of Householder's Birth`<50,]
+ggplot(d)+
+  geom_bar(aes(d$`Place of Householder's Birth`))
+
+#household weight
+ggplot(df2014)+
+  geom_density(aes(df2014$`Household Sampling Weight (5 implied decimal places)`))
+
+#Windows condition
+ggplot(df2014,aes(as.factor(df2014$`Condition of Windows: Broken or missing windows`),fill=as.factor(df2014$Borough)))+
+  geom_bar(position="fill")
+
+ggplot(df2017,aes(as.factor(df2017$`Condition of Windows: Broken or missing windows`),fill=as.factor(df2017$Borough)))+
+  geom_bar(position="fill")
+
+ggplot(df2014,aes(x=as.factor(df2014$`Condition of Windows: Boarded up windows`),fill=as.factor(df2014$Borough)))+
+  geom_bar(position="fill")
+
+ggplot(df2017,aes(x=as.factor(df2017$`Condition of Windows: Boarded up windows`),fill=as.factor(df2017$Borough)))+
+  geom_bar(position="fill")
 ```
 
