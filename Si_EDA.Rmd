@@ -9,17 +9,477 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+```{r}
+
+# tools
+
+library(readr)
+library(dplyr)
+
+```
+
 ```{r}
 
 # for some reason, I cannot run Longhao's code on my computer, so I just create my own cleaning and EDA rmd
 
-library(readr)
+
 # check useful variables
+file1991 <- read_csv("Data/NYCHVS 1991 Occupied File for ASA Challenge_CSV.csv")
+file1993 <- read_csv("Data/NYCHVS 1993 Occupied File for ASA Challenge_CSV.csv")
+file1996 <- read_csv("Data/NYCHVS 1996 Occupied File for ASA Challenge_CSV.csv")
+file1999 <- read_csv("Data/NYCHVS 1999 Occupied File for ASA Challenge_CSV.csv")
+file2002 <- read_csv("Data/NYCHVS 2002 Occupied File for ASA Challenge_CSV.csv")
+file2005 <- read_csv("Data/NYCHVS 2005 Occupied File for ASA Challenge_CSV.csv")
 file2008 <- read_csv("Data/NYCHVS 2008 Occupied File for ASA Challenge_CSV.csv")
 file2011 <- read_csv("Data/NYCHVS 2011 Occupied File for ASA Challenge_CSV.csv")
-
+file2014 <- read_csv("Data/NYCHVS 2014 Occupied File for ASA Challenge_CSV.csv")
+file2017 <- read_csv("Data/NYCHVS 2017 Occupied File for ASA Challenge_CSV.csv")
 # Variables confirmed and try to delete other variables to create a smaller, targeted dataframe
 
 # to be committed
+
+```
+
+
+```{r}
+
+# clean the data and set a standardized data frame
+
+# I deleted those variables that not commomly shared
+
+# if some of them are too important to be removed, we can get them back later
+
+
+
+file1991 <- file1991[c("borough",
+         "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+file1993 <- file1993[c("borough",
+         "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+file1996 <- file1996[c("borough",
+         "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+file1999 <- file1999[c("borough",
+        "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+file2002 <- file2002[c("borough",
+         "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+file2005 <- file2005[c("borough",
+         "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+
+file2008 <- file2008[c("borough",
+         "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+file2011 <- file2011[c("borough",
+         "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+
+file2014 <- file2014[c("borough",
+         "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+file2017 <- file2017[c("borough",
+        "_1b",
+         "_1c",
+         "_1e",
+         "_1f",
+         "_3",
+         "_4a",
+         "_5",
+         "_6",
+         "_7a",
+         "_7b",
+         "_7c",
+         "hhinc",
+         "sub",
+         "sba",
+         "year",
+         "_h",
+         "_i",
+         "mgrent",
+         "_24a",
+         "_24b",
+         "_27",
+         "_28a2",
+         "_28b1",
+         "_28b2",
+         "_28c",
+         "_28d1",
+         "_28d2",
+         "_28e1",
+         "_28e2",
+         "_29")]
+
+
+# now combine all dataframes into one with overlap variables
+
+
+DF <- rbind(file1991, file1993, file1996, file1999, file2002, file2005, file2008, file2011, file2014, file2017)
+
+```
+
+
+
+
+```{r}
+
+
+# to save previous variables we chose, this chunk is just comments
+
+# "borough",
+#          "_1b",
+#          "_1c",
+#          "_1e",
+#          "_1f",
+#          "_3",
+#          "_3b",
+#          "_4a",
+#          "_5",
+#          "_6",
+#          "_7a",
+#          "_7b",
+#          "_7c",
+#          "_57a",
+#          "_57b",
+#          "_58",
+#          "hhinc",
+#          "sub",
+#          "sba",
+#          "year",
+#          "_d1",
+#          "_d2",
+#          "_d3",
+#          "_d4",
+#          "_d5",
+#          "_d6",
+#          "_e1",
+#          "_e2",
+#          "_e3",
+#          "_e4",
+#          "_e5",
+#          "_f1",
+#          "_f2",
+#          "_f3",
+#          "_f4",
+#          "_f5",
+#          "_f6",
+#          "_g1",
+#          "_g2",
+#          "_g3",
+#          "_g4",
+#          "_g5",
+#          "_g6",
+#          "_h",
+#          "_i",
+#          "_j1",
+#          "_j2",
+#          "_j3",
+#          "mgrent",
+#          "_24a",
+#          "_24b",
+#          "_25a",
+#          "_25b",
+#          "_25c",
+#          "_26a",
+#          "_26b",
+#          "_26c",
+#          "_27",
+#          "_28a2",
+#          "_28b1",
+#          "_28b2",
+#          "_28c",
+#          "_28d1",
+#          "_28d2",
+#          "_28e1",
+#          "_28e2",
+#          "_29")])
+# 
+
+
+```
+
+```{r}
+
+# EDA
+
+# now we can use shared code
+
+# try to figure some interesting directions with our
+
+## Final dataframe: DF
+
+
 
 ```
