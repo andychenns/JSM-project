@@ -1,0 +1,78 @@
+---
+title: "Map"
+author: "LonghaoChen&Megha"
+date: "3/28/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(leaflet)
+library(geojsonio)
+library(readr)
+library(fuzzyjoin)
+require(sp)
+library(tidyverse)
+```
+
+
+```{r}
+#Input the nycity contour 
+nycity <- geojsonio::geojson_read("nyc_sub_borough_area.geojson", what = "sp")
+
+#Load 2017 data
+data_2014<- read_csv("NYCHVS 2014 Occupied File for ASA Challenge_CSV.csv", skip = 1)
+names(data_2014)[names(data_2014)=="`Borough and Sub-Borough Area`"] <- "bor_subb"
+
+test <- data_2014 %>% select(`Borough and Sub-Borough Area`,`Monthly contract rent`) %>% rename(bor_subb=`Borough and Sub-Borough Area`)
+
+#Join both tables together
+require(sp)
+
+nycity@data[]<-NULL
+
+subdata <- merge(nycity, test, by = "bor_subb",duplicateGeoms = TRUE) 
+
+
+
+leaflet(subdata) %>%
+  addTiles() %>%
+  addPolygons( smoothFactor = 0.3, fillOpacity = 0.2,weight=1) 
+```
+
+
+
+```{r}
+
+
+
+nyc_fico$borough <- gsub('Staten', 'Staten Island', nyc_fico$borough) 
+map_data_fico <- geo_join(nyc_boroughs, nyc_fico, "BoroName", "borough",how="inner") 
+
+
+pal0 <- colorNumeric(palette = "YlOrRd", 
+                     domain = range(map_data_fico@data$avg_fico)) 
+centers0 <- data.frame(gCentroid(map_data_fico,byid=TRUE)) 
+centers0$region <- row.names(map_data_fico) 
+centers0$region <- ifelse(centers0$region=="0","Staten Island", 
+                          ifelse(centers0$region=="1","Queens", 
+                                 ifelse(centers0$region=="2","Brooklyn", 
+                                        ifelse(centers0$region=="3","Manhattan", 
+                                               "Bronx")))) 
+leaflet(map_data_fico) %>% 
+  addTiles() %>%  
+  addPolygons(stroke=TRUE,weight=1,fillOpacity = 0.5, smoothFactor = 0.5, 
+              color = "black",fillColor = ~pal0(avg_fico), popup = ~as.character(avg_fico)) %>% 
+  addLabelOnlyMarkers(data=centers0,lng = ~x,lat = ~y, label = ~region,labelOptions = labelOptions(noHide = TRUE, direction = 'top', textOnly = TRUE)) %>% 
+  addLegend("bottomright", pal = pal0, values = ~avg_fico, 
+            title = "Average Fico Score", 
+            opacity = 1 
+  ) %>% 
+  addProviderTiles("CartoDB.Positron") %>% 
+  setView(-73.91, 40.70, zoom = 10)
+```
+
