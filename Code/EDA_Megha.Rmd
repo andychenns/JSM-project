@@ -1,0 +1,814 @@
+---
+title: "EDA"
+author: "Megha Pandit"
+date: "March 3, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(gtools)
+library(readr)
+library(ggrepel)
+```
+
+
+
+```{r}
+n91 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_1991.csv")
+n93 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_1993.csv")
+n96 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_1996.csv")
+n99 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_1999.csv")
+n02 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_2002.csv")
+n05 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_2005.csv")
+n08 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_2008.csv")
+n11 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_2011.csv")
+n14 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_2014.csv")
+n17 <- read_csv("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYCHVS_2017.csv")
+
+```
+
+
+
+```{r}
+# Selecting the shortlisted variables
+
+n_91 <- n91[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding Birthplaces for 1991
+n_91$Birth <- n_91$`_7a`
+n_91$Birth[n_91$`_7a` == 16] <- 15
+
+n_91$FatherB <- n_91$`_7b`
+n_91$FatherB[n_91$`_7b` == 16] <- 15
+
+n_91$MotherB <- n_91$`_7c`
+n_91$MotherB[n_91$`_7c` == 16] <- 15
+
+
+
+n_93 <- n93[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 1993
+n_93$Birth <- n_93$`_7a`
+n_93$Birth[n_93$`_7a` == 16] <- 15
+
+n_93$FatherB <- n_93$`_7b`
+n_93$FatherB[n_93$`_7b` == 16] <- 15
+
+n_93$MotherB <- n_93$`_7c`
+n_93$MotherB[n_93$`_7c` == 16] <- 15
+
+
+
+n_96 <- n96[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 1996
+n_96$Birth <- n_96$`_7a`
+n_96$Birth[n_96$`_7a` == 16] <- 15
+
+n_96$FatherB <- n_96$`_7b`
+n_96$FatherB[n_96$`_7b` == 16] <- 15
+
+n_96$MotherB <- n_96$`_7c`
+n_96$MotherB[n_96$`_7c` == 16] <- 15
+
+
+
+n_99 <- n99[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 1999
+n_99$Birth <- n_99$`_7a`
+n_99$Birth[n_99$`_7a` == 9] <- 10
+n_99$Birth[n_99$`_7a` == 16] <- 15
+n_99$Birth[n_99$`_7a` == 25] <- 14
+n_99$Birth[n_99$`_7a` == 26] <- 19
+
+n_99$FatherB <- n_99$`_7b`
+n_99$FatherB[n_99$`_7b` == 9] <- 10
+n_99$FatherB[n_99$`_7b` == 16] <- 15
+n_99$FatherB[n_99$`_7b` == 25] <- 14
+n_99$FatherB[n_99$`_7b` == 26] <- 19
+
+n_99$MotherB <- n_99$`_7c`
+n_99$MotherB[n_99$`_7c` == 9] <- 10
+n_99$MotherB[n_99$`_7c` == 16] <- 15
+n_99$MotherB[n_99$`_7c` == 25] <- 14
+n_99$MotherB[n_99$`_7c` == 26] <- 19
+
+
+n_02 <- n02[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 2002
+n_02$Birth <- n_02$`_7a`
+n_02$Birth[n_02$`_7a` == 9] <- 10
+n_02$Birth[n_02$`_7a` == 16] <- 15
+n_02$Birth[n_02$`_7a` == 25] <- 14
+n_02$Birth[n_02$`_7a` == 26] <- 19
+
+n_02$FatherB <- n_02$`_7b`
+n_02$FatherB[n_02$`_7b` == 9] <- 10
+n_02$FatherB[n_02$`_7b` == 16] <- 15
+n_02$FatherB[n_02$`_7b` == 25] <- 14
+n_02$FatherB[n_02$`_7b` == 26] <- 19
+
+n_02$MotherB <- n_02$`_7c`
+n_02$MotherB[n_02$`_7c` == 9] <- 10
+n_02$MotherB[n_02$`_7c` == 16] <- 15
+n_02$MotherB[n_02$`_7c` == 25] <- 14
+n_02$MotherB[n_02$`_7c` == 26] <- 19
+
+
+n_05 <- n05[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 2005
+n_05$Birth <- n_05$`_7a`
+n_05$Birth[n_05$`_7a` == 7] <- 10
+n_05$Birth[n_05$`_7a` == 9] <- 10
+n_05$Birth[n_05$`_7a` == 10] <- 11
+n_05$Birth[n_05$`_7a` == 11] <- 12
+n_05$Birth[n_05$`_7a` == 12] <- 13
+n_05$Birth[n_05$`_7a` == 13] <- 14
+n_05$Birth[n_05$`_7a` == 15] <- 24
+n_05$Birth[n_05$`_7a` == 16] <- 15
+n_05$Birth[n_05$`_7a` == 17] <- 15
+n_05$Birth[n_05$`_7a` == 18] <- 17
+n_05$Birth[n_05$`_7a` == 19] <- 18
+n_05$Birth[n_05$`_7a` == 20] <- 19
+n_05$Birth[n_05$`_7a` == 21] <- 19
+n_05$Birth[n_05$`_7a` == 22] <- 20
+n_05$Birth[n_05$`_7a` == 23] <- 21
+n_05$Birth[n_05$`_7a` == 24] <- 22
+n_05$Birth[n_05$`_7a` == 25] <- 23
+n_05$Birth[n_05$`_7a` == 26] <- 24
+
+n_05$FatherB <- n_05$`_7b`
+n_05$FatherB[n_05$`_7b` == 7] <- 10
+n_05$FatherB[n_05$`_7b` == 9] <- 10
+n_05$FatherB[n_05$`_7b` == 10] <- 11
+n_05$FatherB[n_05$`_7b` == 11] <- 12
+n_05$FatherB[n_05$`_7b` == 12] <- 13
+n_05$FatherB[n_05$`_7b` == 13] <- 14
+n_05$FatherB[n_05$`_7b` == 15] <- 24
+n_05$FatherB[n_05$`_7b` == 16] <- 15
+n_05$FatherB[n_05$`_7b` == 17] <- 15
+n_05$FatherB[n_05$`_7b` == 18] <- 17
+n_05$FatherB[n_05$`_7b` == 19] <- 18
+n_05$FatherB[n_05$`_7b` == 20] <- 19
+n_05$FatherB[n_05$`_7b` == 21] <- 19
+n_05$FatherB[n_05$`_7b` == 22] <- 20
+n_05$FatherB[n_05$`_7b` == 23] <- 21
+n_05$FatherB[n_05$`_7b` == 24] <- 22
+n_05$FatherB[n_05$`_7b` == 25] <- 23
+n_05$FatherB[n_05$`_7b` == 26] <- 24
+
+n_05$MotherB <- n_05$`_7c`
+n_05$MotherB[n_05$`_7c` == 7] <- 10
+n_05$MotherB[n_05$`_7c` == 9] <- 10
+n_05$MotherB[n_05$`_7c` == 10] <- 11
+n_05$MotherB[n_05$`_7c` == 11] <- 12
+n_05$MotherB[n_05$`_7c` == 12] <- 13
+n_05$MotherB[n_05$`_7c` == 13] <- 14
+n_05$MotherB[n_05$`_7c` == 15] <- 24
+n_05$MotherB[n_05$`_7c` == 16] <- 15
+n_05$MotherB[n_05$`_7c` == 17] <- 15
+n_05$MotherB[n_05$`_7c` == 18] <- 17
+n_05$MotherB[n_05$`_7c` == 19] <- 18
+n_05$MotherB[n_05$`_7c` == 20] <- 19
+n_05$MotherB[n_05$`_7c` == 21] <- 19
+n_05$MotherB[n_05$`_7c` == 22] <- 20
+n_05$MotherB[n_05$`_7c` == 23] <- 21
+n_05$MotherB[n_05$`_7c` == 24] <- 22
+n_05$MotherB[n_05$`_7c` == 25] <- 23
+n_05$MotherB[n_05$`_7c` == 26] <- 24
+
+
+n_08 <- n08[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 2008
+n_08$Birth <- n_08$`_7a`
+n_08$Birth[n_08$`_7a` == 7] <- 10
+n_08$Birth[n_08$`_7a` == 9] <- 10
+n_08$Birth[n_08$`_7a` == 10] <- 11
+n_08$Birth[n_08$`_7a` == 11] <- 12
+n_08$Birth[n_08$`_7a` == 12] <- 13
+n_08$Birth[n_08$`_7a` == 13] <- 14
+n_08$Birth[n_08$`_7a` == 15] <- 24
+n_08$Birth[n_08$`_7a` == 16] <- 15
+n_08$Birth[n_08$`_7a` == 17] <- 15
+n_08$Birth[n_08$`_7a` == 18] <- 17
+n_08$Birth[n_08$`_7a` == 19] <- 18
+n_08$Birth[n_08$`_7a` == 20] <- 19
+n_08$Birth[n_08$`_7a` == 21] <- 19
+n_08$Birth[n_08$`_7a` == 22] <- 20
+n_08$Birth[n_08$`_7a` == 23] <- 21
+n_08$Birth[n_08$`_7a` == 24] <- 22
+n_08$Birth[n_08$`_7a` == 25] <- 23
+n_08$Birth[n_08$`_7a` == 26] <- 24
+
+n_08$FatherB <- n_08$`_7b`
+n_08$FatherB[n_08$`_7b` == 7] <- 10
+n_08$FatherB[n_08$`_7b` == 9] <- 10
+n_08$FatherB[n_08$`_7b` == 10] <- 11
+n_08$FatherB[n_08$`_7b` == 11] <- 12
+n_08$FatherB[n_08$`_7b` == 12] <- 13
+n_08$FatherB[n_08$`_7b` == 13] <- 14
+n_08$FatherB[n_08$`_7b` == 15] <- 24
+n_08$FatherB[n_08$`_7b` == 16] <- 15
+n_08$FatherB[n_08$`_7b` == 17] <- 15
+n_08$FatherB[n_08$`_7b` == 18] <- 17
+n_08$FatherB[n_08$`_7b` == 19] <- 18
+n_08$FatherB[n_08$`_7b` == 20] <- 19
+n_08$FatherB[n_08$`_7b` == 21] <- 19
+n_08$FatherB[n_08$`_7b` == 22] <- 20
+n_08$FatherB[n_08$`_7b` == 23] <- 21
+n_08$FatherB[n_08$`_7b` == 24] <- 22
+n_08$FatherB[n_08$`_7b` == 25] <- 23
+n_08$FatherB[n_08$`_7b` == 26] <- 24
+
+n_08$MotherB <- n_08$`_7c`
+n_08$MotherB[n_08$`_7c` == 7] <- 10
+n_08$MotherB[n_08$`_7c` == 9] <- 10
+n_08$MotherB[n_08$`_7c` == 10] <- 11
+n_08$MotherB[n_08$`_7c` == 11] <- 12
+n_08$MotherB[n_08$`_7c` == 12] <- 13
+n_08$MotherB[n_08$`_7c` == 13] <- 14
+n_08$MotherB[n_08$`_7c` == 15] <- 24
+n_08$MotherB[n_08$`_7c` == 16] <- 15
+n_08$MotherB[n_08$`_7c` == 17] <- 15
+n_08$MotherB[n_08$`_7c` == 18] <- 17
+n_08$MotherB[n_08$`_7c` == 19] <- 18
+n_08$MotherB[n_08$`_7c` == 20] <- 19
+n_08$MotherB[n_08$`_7c` == 21] <- 19
+n_08$MotherB[n_08$`_7c` == 22] <- 20
+n_08$MotherB[n_08$`_7c` == 23] <- 21
+n_08$MotherB[n_08$`_7c` == 24] <- 22
+n_08$MotherB[n_08$`_7c` == 25] <- 23
+n_08$MotherB[n_08$`_7c` == 26] <- 24
+
+
+n_11 <- n11[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 2011
+n_11$Birth <- n_11$`_7a`
+n_11$Birth[n_11$`_7a` == 7] <- 10
+n_11$Birth[n_11$`_7a` == 9] <- 10
+n_11$Birth[n_11$`_7a` == 10] <- 11
+n_11$Birth[n_11$`_7a` == 11] <- 12
+n_11$Birth[n_11$`_7a` == 12] <- 13
+n_11$Birth[n_11$`_7a` == 13] <- 14
+n_11$Birth[n_11$`_7a` == 15] <- 24
+n_11$Birth[n_11$`_7a` == 16] <- 15
+n_11$Birth[n_11$`_7a` == 17] <- 15
+n_11$Birth[n_11$`_7a` == 18] <- 17
+n_11$Birth[n_11$`_7a` == 19] <- 18
+n_11$Birth[n_11$`_7a` == 20] <- 19
+n_11$Birth[n_11$`_7a` == 21] <- 19
+n_11$Birth[n_11$`_7a` == 22] <- 20
+n_11$Birth[n_11$`_7a` == 23] <- 21
+n_11$Birth[n_11$`_7a` == 24] <- 22
+n_11$Birth[n_11$`_7a` == 25] <- 23
+n_11$Birth[n_11$`_7a` == 26] <- 24
+
+n_11$FatherB <- n_11$`_7b`
+n_11$FatherB[n_11$`_7b` == 7] <- 10
+n_11$FatherB[n_11$`_7b` == 9] <- 10
+n_11$FatherB[n_11$`_7b` == 10] <- 11
+n_11$FatherB[n_11$`_7b` == 11] <- 12
+n_11$FatherB[n_11$`_7b` == 12] <- 13
+n_11$FatherB[n_11$`_7b` == 13] <- 14
+n_11$FatherB[n_11$`_7b` == 15] <- 24
+n_11$FatherB[n_11$`_7b` == 16] <- 15
+n_11$FatherB[n_11$`_7b` == 17] <- 15
+n_11$FatherB[n_11$`_7b` == 18] <- 17
+n_11$FatherB[n_11$`_7b` == 19] <- 18
+n_11$FatherB[n_11$`_7b` == 20] <- 19
+n_11$FatherB[n_11$`_7b` == 21] <- 19
+n_11$FatherB[n_11$`_7b` == 22] <- 20
+n_11$FatherB[n_11$`_7b` == 23] <- 21
+n_11$FatherB[n_11$`_7b` == 24] <- 22
+n_11$FatherB[n_11$`_7b` == 25] <- 23
+n_11$FatherB[n_11$`_7b` == 26] <- 24
+
+n_11$MotherB <- n_11$`_7c`
+n_11$MotherB[n_11$`_7c` == 7] <- 10
+n_11$MotherB[n_11$`_7c` == 9] <- 10
+n_11$MotherB[n_11$`_7c` == 10] <- 11
+n_11$MotherB[n_11$`_7c` == 11] <- 12
+n_11$MotherB[n_11$`_7c` == 12] <- 13
+n_11$MotherB[n_11$`_7c` == 13] <- 14
+n_11$MotherB[n_11$`_7c` == 15] <- 24
+n_11$MotherB[n_11$`_7c` == 16] <- 15
+n_11$MotherB[n_11$`_7c` == 17] <- 15
+n_11$MotherB[n_11$`_7c` == 18] <- 17
+n_11$MotherB[n_11$`_7c` == 19] <- 18
+n_11$MotherB[n_11$`_7c` == 20] <- 19
+n_11$MotherB[n_11$`_7c` == 21] <- 19
+n_11$MotherB[n_11$`_7c` == 22] <- 20
+n_11$MotherB[n_11$`_7c` == 23] <- 21
+n_11$MotherB[n_11$`_7c` == 24] <- 22
+n_11$MotherB[n_11$`_7c` == 25] <- 23
+n_11$MotherB[n_11$`_7c` == 26] <- 24
+
+
+n_14 <- n14[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 2014
+n_14$Birth <- n_14$`_7a`
+n_14$Birth[n_14$`_7a` == 7] <- 10
+n_14$Birth[n_14$`_7a` == 9] <- 10
+n_14$Birth[n_14$`_7a` == 10] <- 11
+n_14$Birth[n_14$`_7a` == 11] <- 12
+n_14$Birth[n_14$`_7a` == 12] <- 13
+n_14$Birth[n_14$`_7a` == 13] <- 14
+n_14$Birth[n_14$`_7a` == 15] <- 24
+n_14$Birth[n_14$`_7a` == 16] <- 15
+n_14$Birth[n_14$`_7a` == 17] <- 15
+n_14$Birth[n_14$`_7a` == 18] <- 17
+n_14$Birth[n_14$`_7a` == 19] <- 18
+n_14$Birth[n_14$`_7a` == 20] <- 19
+n_14$Birth[n_14$`_7a` == 21] <- 19
+n_14$Birth[n_14$`_7a` == 22] <- 20
+n_14$Birth[n_14$`_7a` == 23] <- 21
+n_14$Birth[n_14$`_7a` == 24] <- 22
+n_14$Birth[n_14$`_7a` == 25] <- 23
+n_14$Birth[n_14$`_7a` == 26] <- 24
+
+n_14$FatherB <- n_14$`_7b`
+n_14$FatherB[n_14$`_7b` == 7] <- 10
+n_14$FatherB[n_14$`_7b` == 9] <- 10
+n_14$FatherB[n_14$`_7b` == 10] <- 11
+n_14$FatherB[n_14$`_7b` == 11] <- 12
+n_14$FatherB[n_14$`_7b` == 12] <- 13
+n_14$FatherB[n_14$`_7b` == 13] <- 14
+n_14$FatherB[n_14$`_7b` == 15] <- 24
+n_14$FatherB[n_14$`_7b` == 16] <- 15
+n_14$FatherB[n_14$`_7b` == 17] <- 15
+n_14$FatherB[n_14$`_7b` == 18] <- 17
+n_14$FatherB[n_14$`_7b` == 19] <- 18
+n_14$FatherB[n_14$`_7b` == 20] <- 19
+n_14$FatherB[n_14$`_7b` == 21] <- 19
+n_14$FatherB[n_14$`_7b` == 22] <- 20
+n_14$FatherB[n_14$`_7b` == 23] <- 21
+n_14$FatherB[n_14$`_7b` == 24] <- 22
+n_14$FatherB[n_14$`_7b` == 25] <- 23
+n_14$FatherB[n_14$`_7b` == 26] <- 24
+
+n_14$MotherB <- n_14$`_7c`
+n_14$MotherB[n_14$`_7c` == 7] <- 10
+n_14$MotherB[n_14$`_7c` == 9] <- 10
+n_14$MotherB[n_14$`_7c` == 10] <- 11
+n_14$MotherB[n_14$`_7c` == 11] <- 12
+n_14$MotherB[n_14$`_7c` == 12] <- 13
+n_14$MotherB[n_14$`_7c` == 13] <- 14
+n_14$MotherB[n_14$`_7c` == 15] <- 24
+n_14$MotherB[n_14$`_7c` == 16] <- 15
+n_14$MotherB[n_14$`_7c` == 17] <- 15
+n_14$MotherB[n_14$`_7c` == 18] <- 17
+n_14$MotherB[n_14$`_7c` == 19] <- 18
+n_14$MotherB[n_14$`_7c` == 20] <- 19
+n_14$MotherB[n_14$`_7c` == 21] <- 19
+n_14$MotherB[n_14$`_7c` == 22] <- 20
+n_14$MotherB[n_14$`_7c` == 23] <- 21
+n_14$MotherB[n_14$`_7c` == 24] <- 22
+n_14$MotherB[n_14$`_7c` == 25] <- 23
+n_14$MotherB[n_14$`_7c` == 26] <- 24
+
+
+n_17 <- n17[-1,] %>%
+  select(borough, `_d3`, `_d4`, `_d5`, `_d6`, `_e1`, `_e2`, `_e3`, `_e4`, `_e5`, `_f1`, `_f2`, `_f3`, `_f6`,
+         `_g3`, `_g4`, `_g5`, `_g6`, `_h`, `_i`, `_1b`, `_1c`, `_1e`, `_1f`, `_3`, `_4a`, `_5`,
+         `_6`, `_7a`, `_7b`, `_7c`, `_24a`, `_24b`, `_25a`, `_25c`, `_26a`, `_26c`, `_27`, `_28a1`,
+         `_28a2`, `_28b1`, `_28b2`, `_28c`, `_28d1`, `_28d2`, `_28e1`, `_28e2`, `_29`, `_35a`, `_36a`,
+         `_36b`, `_37a`, `_37b`, `_38a`, hcr, npr, mgrent, hhinc, sub, sba, year)
+
+
+#Recoding birthplaces for 2017
+n_17$Birth <- n_17$`_7a`
+n_17$Birth[n_17$`_7a` == 7] <- 10
+n_17$Birth[n_17$`_7a` == 9] <- 10
+n_17$Birth[n_17$`_7a` == 10] <- 11
+n_17$Birth[n_17$`_7a` == 11] <- 12
+n_17$Birth[n_17$`_7a` == 12] <- 13
+n_17$Birth[n_17$`_7a` == 13] <- 14
+n_17$Birth[n_17$`_7a` == 15] <- 24
+n_17$Birth[n_17$`_7a` == 16] <- 15
+n_17$Birth[n_17$`_7a` == 17] <- 15
+n_17$Birth[n_17$`_7a` == 18] <- 17
+n_17$Birth[n_17$`_7a` == 19] <- 18
+n_17$Birth[n_17$`_7a` == 20] <- 19
+n_17$Birth[n_17$`_7a` == 21] <- 19
+n_17$Birth[n_17$`_7a` == 22] <- 20
+n_17$Birth[n_17$`_7a` == 23] <- 21
+n_17$Birth[n_17$`_7a` == 24] <- 22
+n_17$Birth[n_17$`_7a` == 25] <- 23
+n_17$Birth[n_17$`_7a` == 26] <- 24
+
+n_17$FatherB <- n_17$`_7b`
+n_17$FatherB[n_17$`_7b` == 7] <- 10
+n_17$FatherB[n_17$`_7b` == 9] <- 10
+n_17$FatherB[n_17$`_7b` == 10] <- 11
+n_17$FatherB[n_17$`_7b` == 11] <- 12
+n_17$FatherB[n_17$`_7b` == 12] <- 13
+n_17$FatherB[n_17$`_7b` == 13] <- 14
+n_17$FatherB[n_17$`_7b` == 15] <- 24
+n_17$FatherB[n_17$`_7b` == 16] <- 15
+n_17$FatherB[n_17$`_7b` == 17] <- 15
+n_17$FatherB[n_17$`_7b` == 18] <- 17
+n_17$FatherB[n_17$`_7b` == 19] <- 18
+n_17$FatherB[n_17$`_7b` == 20] <- 19
+n_17$FatherB[n_17$`_7b` == 21] <- 19
+n_17$FatherB[n_17$`_7b` == 22] <- 20
+n_17$FatherB[n_17$`_7b` == 23] <- 21
+n_17$FatherB[n_17$`_7b` == 24] <- 22
+n_17$FatherB[n_17$`_7b` == 25] <- 23
+n_17$FatherB[n_17$`_7b` == 26] <- 24
+
+n_17$MotherB <- n_17$`_7c`
+n_17$MotherB[n_17$`_7c` == 7] <- 10
+n_17$MotherB[n_17$`_7c` == 9] <- 10
+n_17$MotherB[n_17$`_7c` == 10] <- 11
+n_17$MotherB[n_17$`_7c` == 11] <- 12
+n_17$MotherB[n_17$`_7c` == 12] <- 13
+n_17$MotherB[n_17$`_7c` == 13] <- 14
+n_17$MotherB[n_17$`_7c` == 15] <- 24
+n_17$MotherB[n_17$`_7c` == 16] <- 15
+n_17$MotherB[n_17$`_7c` == 17] <- 15
+n_17$MotherB[n_17$`_7c` == 18] <- 17
+n_17$MotherB[n_17$`_7c` == 19] <- 18
+n_17$MotherB[n_17$`_7c` == 20] <- 19
+n_17$MotherB[n_17$`_7c` == 21] <- 19
+n_17$MotherB[n_17$`_7c` == 22] <- 20
+n_17$MotherB[n_17$`_7c` == 23] <- 21
+n_17$MotherB[n_17$`_7c` == 24] <- 22
+n_17$MotherB[n_17$`_7c` == 25] <- 23
+n_17$MotherB[n_17$`_7c` == 26] <- 24
+
+
+DF <- bind_rows(n_91, n_93, n_96, n_99, n_02, n_05, n_08, n_11, n_14, n_17)
+
+```
+
+
+
+```{r}
+# Renaming the Years
+colnames(DF)[61] <- "Year"
+
+DF$`Year`[DF$`Year` == 91] <- "1991"
+DF$`Year`[DF$`Year` == 93] <- "1993"
+DF$`Year`[DF$`Year` == 96] <- "1996"
+DF$`Year`[DF$`Year` == 99] <- "1999"
+
+```
+
+
+
+
+
+```{r}
+# First and Second generation immigrants
+
+DF$Gen <- ifelse(DF$Birth != 10, "1", ifelse(DF$MotherB != 10, "2", ifelse(DF$FatherB != 10, "2", "0")))
+
+```
+
+
+
+```{r}
+#EDA starts
+
+#Householder - Male vs Female by Borough
+#70 observations are coded as 8 for gender (8 is not explained in the codebook)
+
+library(RColorBrewer)
+getpalette <- colorRampPalette(brewer.pal(9, "Set1"))
+
+ggplot(DF[DF$`_1b` != 8,])+
+  aes(x = borough)+
+  geom_bar(aes(fill = `_1b`), position = "fill")+
+  scale_x_discrete(labels = c("1" = "Bronx", "2" = "Brooklyn", "3" = "Manhattan", "4" = "Queens", "5" = "Staten Island"))+
+  scale_fill_manual("Householder's Gender", values = getpalette(9), labels = c("1" = "Male",
+                                                                               "2" = "Female", "8" = "Not Coded"))+
+  labs(title = "Male vs Female Householders by Borough", x = "Borough", y = "Proportion")
+
+#By Sub-borough
+ggplot(DF[DF$`_1b` != 8,])+
+  aes(x = sba)+
+  geom_bar(aes(fill = `_1b`), position = "fill")+
+  scale_fill_manual("Householder's Gender", values = getpalette(9), labels = c("1" = "Male",
+                                                                               "2" = "Female"))+
+  labs(title = "Male vs Female Householders by Sub-Borough", x = "Sub-Borough", y = "Proportion")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+
+```
+
+
+
+```{r}
+# 1st gen and 2nd gen immigrants over the years
+
+ggplot(DF[DF$Gen != 0,])+
+  aes(x = Year)+
+  geom_bar(aes(fill = factor(Gen)), position = "fill")+
+  labs(title = "1st and 2nd Gen Immigrants over the Years", y = "Proportion")+
+  scale_fill_brewer(name = "Generation", palette = "Accent")
+
+# 1st and 2nd gen immigrants by sub-borough
+ggplot(DF[DF$Gen != 0,])+
+  aes(x = sba)+
+  geom_bar(aes(fill = factor(Gen)), position = "fill")+
+  labs(title = "1st and 2nd Gen Immigrants by Sub-Borough", y = "Proportion")+
+  scale_fill_brewer(name = "Generation", palette = "Accent")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+```
+
+
+```{r}
+#1st gen place of birth
+library(RColorBrewer)
+getpalette1 <- colorRampPalette(brewer.pal(9, "Paired"))
+
+ggplot(DF[DF$Gen == 1 & DF$Birth != 98,])+
+  aes(x = Year)+
+  geom_bar(aes(fill = factor(Birth)), position = "fill")+
+  labs(title = "Birthplace of 1st Gen Immigrants", y = "Proportion")+
+  scale_fill_manual(name = "Birthplace", values = getpalette1(16), labels = c("11" = "Puerto Rico", "12" = "Dominican Republic", "13" = "Caribbean(other than PR and DR)",
+                    "14" = "Mexico, Central and South America", "15" = "Europe, Russia, Central Asia, Transcaucasia",
+                    "17" = "China, Hongkong, Taiwan", "18" = "Korea", "19" = "India, Pakistan, Bangladesh",
+                    "20" = "Philippines", "21" = "Southeast Asia", "22" = "Other Asia", "23" = "Africa",
+                    "24" = "All other countries", "98" = "Not Reported"))
+
+#Puerto Rico - decrease in proportion over the years
+
+#2nd gen place of birth for father and mother
+#father's place of birth
+
+ggplot(DF[DF$Gen == 2 & DF$FatherB != 98,])+
+  aes(x = Year)+
+  geom_bar(aes(fill = factor(FatherB)), position = "fill")+
+  labs(title = "2nd Gen Immigrant's Father's Birthplace", y = "Proportion")+
+  scale_fill_manual(name = "Birthplace", values = getpalette1(16), labels = c("11" = "Puerto Rico", "12" = "Dominican Republic", "13" = "Caribbean(other than PR and DR)",
+                    "14" = "Mexico, Central and South America", "15" = "Europe, Russia, Central Asia, Transcaucasia",
+                    "17" = "China, Hongkong, Taiwan", "18" = "Korea", "19" = "India, Pakistan, Bangladesh",
+                    "20" = "Philippines", "21" = "Southeast Asia", "22" = "Other Asia", "23" = "Africa",
+                    "24" = "All other countries", "98" = "Not Reported", "10" = "US"))
+
+#mother's place of birth
+
+ggplot(DF[DF$Gen == 2 & DF$MotherB != 98,])+
+  aes(x = Year)+
+  geom_bar(aes(fill = factor(MotherB)), position = "fill")+
+  labs(title = "2nd Gen Immigrant's Mother's Birthplace", y = "Proportion")+
+  scale_fill_manual(name = "Birthplace", values = getpalette1(16), labels = c("11" = "Puerto Rico", "12" = "Dominican Republic", "13" = "Caribbean(other than PR and DR)",
+                    "14" = "Mexico, Central and South America", "15" = "Europe, Russia, Central Asia, Transcaucasia",
+                    "17" = "China, Hongkong, Taiwan", "18" = "Korea", "19" = "India, Pakistan, Bangladesh",
+                    "20" = "Philippines", "21" = "Southeast Asia", "22" = "Other Asia", "23" = "Africa",
+                    "24" = "All other countries", "98" = "Not Reported", "10" = "US" ))
+
+```
+
+
+
+```{r}
+#Condition of windows for 1st gen immigrants
+#Broken or missing windows - not selected for majority of households in the sub-boroughs
+#Similarly, for walls - hardly any poor conditions in the households
+
+#Condition of building for 1st Gen by sub-borough
+
+
+ggplot(DF[DF$Gen == 1,])+
+  aes(x = sba)+
+  geom_bar(aes(fill = `_h`), position = "fill")+
+  labs(title = "Condition of Building for 1st Gen Immigrants by Sub-Borough",
+       x = "Sub-Borough", y = "proportion")+
+  scale_fill_manual("Condition of Building", values = getpalette1(5), labels = c("1" = "Dilapidated",
+                                                                                "2" = "Sound",
+                                                                                "3" = "Deteriorating",
+                                                                                "8" = "Not Reported"))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+
+#Condition of building for 2nd gen by sub-borough
+ggplot(DF[DF$Gen == 2,])+
+  aes(x = sba)+
+  geom_bar(aes(fill = `_h`), position = "fill")+
+  labs(title = "Condition of Building for 2nd Gen Immigrants by Sub-Borough",
+       x = "Sub-Borough", y = "proportion")+
+  scale_fill_manual("Condition of Building", values = getpalette1(5), labels = c("1" = "Dilapidated",
+                                                                                "2" = "Sound",
+                                                                                "3" = "Deteriorating",
+                                                                                "8" = "Not Reported"))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+
+#Condition of building for US Natives
+ggplot(DF[DF$Gen == 0,])+
+  aes(x = sba)+
+  geom_bar(aes(fill = `_h`), position = "fill")+
+  labs(title = "Condition of Building for Natives by Sub-Borough",
+       x = "Sub-Borough", y = "proportion")+
+  scale_fill_manual("Condition of Building", values = getpalette1(5), labels = c("1" = "Dilapidated",
+                                                                                "2" = "Sound",
+                                                                                "3" = "Deteriorating",
+                                                                                "8" = "Not Reported"))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+  
+```
+
+
+
+
+```{r}
+#Presence of mice and rats - 1st gen
+
+getpalette2 <- colorRampPalette(brewer.pal(8, "Accent"))
+
+ggplot(DF[DF$Gen == 1,])+
+  aes(x = sba)+
+  geom_bar(aes(fill = `_35a`), position = "fill")+
+  labs(title = "Presence of Mice and Rats by Sub-Borough - 1st Gen",
+       x = "Sub-Borough", y = "proportion")+
+  scale_fill_manual("Presence of Mice and Rats", values = getpalette2(5), labels = c("1" = "Yes",
+                                                                                "2" = "No",
+                                                                                "8" = "Not Reported"))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+
+#Presence of Mice and Rats - 2nd Gen
+ggplot(DF[DF$Gen == 2,])+
+  aes(x = sba)+
+  geom_bar(aes(fill = `_35a`), position = "fill")+
+  labs(title = "Presence of Mice and Rats by Sub-Borough - 2nd Gen",
+       x = "Sub-Borough", y = "proportion")+
+  scale_fill_manual("Presence of Mice and Rats", values = getpalette2(5), labels = c("1" = "Yes",
+                                                                                "2" = "No",
+                                                                                "8" = "Not Reported"))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+
+#Presence of Mice and Rats - Natives
+ggplot(DF[DF$Gen == 0,])+
+  aes(x = sba)+
+  geom_bar(aes(fill = `_35a`), position = "fill")+
+  labs(title = "Presence of Mice and Rats by Sub-Borough - Natives",
+       x = "Sub-Borough", y = "proportion")+
+  scale_fill_manual("Presence of Mice and Rats", values = getpalette2(5), labels = c("1" = "Yes",
+                                                                                "2" = "No",
+                                                                                "8" = "Not Reported"))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+
+```
+
+
+```{r}
+#Household Composition for 1st Gen
+DF$Bor <- DF$borough
+DF$Bor[DF$borough == 1] <- "Bronx"
+DF$Bor[DF$borough == 2] <- "Brooklyn"
+DF$Bor[DF$borough == 3] <- "Manhattan"
+DF$Bor[DF$borough == 4] <- "Queens"
+DF$Bor[DF$borough == 5] <- "Staten Island"
+
+
+ggplot(DF[DF$Gen == 1,])+
+  aes(x = factor(as.numeric(hcr)))+
+  geom_bar(aes(fill = factor(as.numeric(hcr))))+
+  labs(title = "Household Composition in Bronx", x = "Composition Code")+
+  facet_wrap(Bor ~.)+
+  scale_fill_discrete(labels = c("1" = "1 - Married Couple\nWith no other household members",
+                                                "2" = "2 - Married Couple\nWith children under 18 only",
+                                                "3" = "3 - Married Couple\nWith no children under 18",
+                                                "4" = "4 - Married Couple\nWith other adults & children under 18",
+                                                "5" = "5 - Age not reported",
+                                                "6" = "6 - Female Householder\nWith no other household members",
+                                                "7" = "7 - Female Householder\nWith children under 18 only",
+                                                "8" = "8 - Female Householder\nWith no children under 18",
+                                                "9" = "9 - Female Householder\nWith other adults & children under 18",
+                                                "10" = "10 - Age not reported",
+                                                "11" = "11 - Male Householder\nWith no other household members",
+                                                "12" = "12 - Male Householder\nWith children under 18 only",
+                                                "13" = "13 - Male Householder\nWith no children under 18",
+                                                "14" = "14 - Male Householder\nWith other adults & children under 18",
+                                                "15" = "15 - Age not reported",
+                                                "16" = "16 - Householder's\nsex not reported"))+
+  guides(fill = guide_legend(ncol = 4, nrow = 5))+
+  theme(legend.position = "bottom", legend.text = element_text(size = 7), legend.title = element_blank(),
+        axis.text.x = element_text(size = 7))
+
+#Female householder with no other household members - high number in Manhattan - no family could be a sign of susceptibility to gentrification
+
+
+#Household composition for 2nd gen
+ggplot(DF[DF$Gen == 2,])+
+  aes(x = factor(as.numeric(hcr)))+
+  geom_bar(aes(fill = factor(as.numeric(hcr))))+
+  labs(title = "Household Composition in Bronx", x = "Composition Code")+
+  facet_wrap(Bor ~.)+
+  scale_fill_discrete(labels = c("1" = "1 - Married Couple\nWith no other household members",
+                                                "2" = "2 - Married Couple\nWith children under 18 only",
+                                                "3" = "3 - Married Couple\nWith no children under 18",
+                                                "4" = "4 - Married Couple\nWith other adults & children under 18",
+                                                "5" = "5 - Age not reported",
+                                                "6" = "6 - Female Householder\nWith no other household members",
+                                                "7" = "7 - Female Householder\nWith children under 18 only",
+                                                "8" = "8 - Female Householder\nWith no children under 18",
+                                                "9" = "9 - Female Householder\nWith other adults & children under 18",
+                                                "10" = "10 - Age not reported",
+                                                "11" = "11 - Male Householder\nWith no other household members",
+                                                "12" = "12 - Male Householder\nWith children under 18 only",
+                                                "13" = "13 - Male Householder\nWith no children under 18",
+                                                "14" = "14 - Male Householder\nWith other adults & children under 18",
+                                                "15" = "15 - Age not reported",
+                                                "16" = "16 - Householder's\nsex not reported"))+
+  guides(fill = guide_legend(ncol = 4, nrow = 5))+
+  theme(legend.position = "bottom", legend.text = element_text(size = 7), legend.title = element_blank(),
+        axis.text.x = element_text(size = 7))
+```
+
+
+
+```{r}
+#Total household income for 1st and 2nd gen
+DF$hhinc[DF$hhinc == 999999] <- 0
+ggplot(DF[DF$Gen == 1 & as.numeric(DF$hhinc) < 500000,])+
+  aes(x = Year, y = as.numeric(hhinc))+
+  geom_boxplot(aes(fill = Year))+
+  theme(legend.position = "none")
+
+ggplot(DF[DF$Gen == 2 & as.numeric(DF$hhinc) < 500000,])+
+  aes(x = Year, y = as.numeric(hhinc))+
+  geom_boxplot(aes(fill = Year))+
+  theme(legend.position = "none")  
+
+ggplot(DF[DF$Gen == 0 & as.numeric(DF$hhinc) < 500000,])+
+  aes(x = Year, y = as.numeric(hhinc))+
+  geom_boxplot(aes(fill = Year))+
+  theme(legend.position = "none")
+```
+
+
+
+
+
+
