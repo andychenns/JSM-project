@@ -966,7 +966,7 @@ NY_2017$mombirth[NY_2017$X_7c == 26] <- 24
 
 NY <- rbind(NY_1991, NY_1993, NY_1996, NY_1999, NY_2002, NY_2005, NY_2008, NY_2011, NY_2014, NY_2017)
 
-NY$gen <- ifelse(NY$hhbirth != 10, 1, ifelse(NY$mombirth != 10, 2, ifelse(NY$dadbirth != 10, 2, 0)))
+NY$gen <- ifelse(NY$hhbirth != 10, "1", ifelse(NY$mombirth != 10, "2", ifelse(NY$dadbirth != 10, "2", "0")))
 
 ##write.csv(NY, file = 'NY.csv')
 ##save(NY, file = 'NY.Rda')
