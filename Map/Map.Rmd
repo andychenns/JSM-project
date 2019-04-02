@@ -15,7 +15,7 @@ library(leaflet)
 library(geojsonio)
 library(readr)
 library(fuzzyjoin)
-require(sp)
+library(sp)
 library(tidyverse)
 ```
 
@@ -28,20 +28,60 @@ nycity <- geojsonio::geojson_read("nyc_sub_borough_area.geojson", what = "sp")
 data_2014<- read_csv("NYCHVS 2014 Occupied File for ASA Challenge_CSV.csv", skip = 1)
 names(data_2014)[names(data_2014)=="`Borough and Sub-Borough Area`"] <- "bor_subb"
 
+data_1991 <-read_csv("NYCHVS 1991 Occupied File for ASA Challenge_CSV.csv", skip = 1)
+names(data_2014)[names(data_2014)=="`Borough and Sub-Borough Area`"] <- "bor_subb"
+
 test <- data_2014 %>% select(`Borough and Sub-Borough Area`,`Monthly contract rent`) %>% rename(bor_subb=`Borough and Sub-Borough Area`)
 
+averagerent<- test %>% filter(`Monthly contract rent`<99900) %>% group_by(bor_subb) %>% mutate(averagerent = mean(`Monthly contract rent`),medianrent=median(`Monthly contract rent`)) %>% distinct(bor_subb, .keep_all = TRUE)
+
 #Join both tables together
-require(sp)
 
-nycity@data[]<-NULL
-
-subdata <- merge(nycity, test, by = "bor_subb",duplicateGeoms = TRUE) 
+test_birth <- data_2014 %>% select(`Borough and Sub-Borough Area`,`Place of Householder's Birth`) %>% rename(bor_subb=`Borough and Sub-Borough Area`)
 
 
+#Merge into one table
+
+subdata <- merge(nycity,test_birth, by = "bor_subb",duplicateGeoms = TRUE) 
+
+#Color palette
+pal <- colorNumeric("viridis", NULL)
 
 leaflet(subdata) %>%
   addTiles() %>%
-  addPolygons( smoothFactor = 0.3, fillOpacity = 0.2,weight=1) 
+  addPolygons( fillColor=~pal(log10(averagerent)),smoothFactor = 0.5, fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", "Average rent  ",formatC(averagerent, big.mark = ","),"  Median rent  ", formatC(medianrent,big.mark = ","))) %>%
+  addLegend(pal=pal, values = ~log10(averagerent), opacity = 1.0,
+    labFormat = labelFormat(transform = function(x) round(10^x)))
+
+#new dataframe
+number_immigrant<- test_birth %>% filter(`Place of Householder's Birth` != 7 &`Place of Householder's Birth` != 9&`Place of Householder's Birth` != 98) %>% group_by(bor_subb) %>% summarize(first_generation = n()) 
+
+
+#
+subdata <- merge(nycity,number_immigrant, by = "bor_subb",duplicateGeoms = TRUE) 
+
+#Second map
+leaflet(subdata) %>%
+  addTiles() %>%
+  addPolygons( fillColor=~pal((first_generation)),smoothFactor = 0.5, fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", " Number of first generation immigrants ",formatC(first_generation))) %>%
+  addLegend(pal=pal, values = ~(first_generation), opacity = 1.0,
+    labFormat = labelFormat(transform = function(x) x))
+
+
+#
+number_immigrant <- data_1991 %>% select(`Borough and Sub-Borough Area`,`Place of Householder's Birth`) %>% rename(bor_subb=`Borough and Sub-Borough Area`) %>% filter(`Place of Householder's Birth` != 10 &`Place of Householder's Birth` != 98) %>% group_by(bor_subb) %>% summarize(first_generation = n()) 
+
+#
+subdata <- merge(nycity,number_immigrant, by = "bor_subb",duplicateGeoms = TRUE) 
+#
+leaflet(subdata) %>%
+  addTiles() %>%
+  addPolygons( fillColor=~pal((first_generation)),smoothFactor = 0.5, fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", " Number of first generation immigrants ",formatC(first_generation))) %>%
+  addLegend(pal=pal, values = ~(first_generation), opacity = 1.0,
+    labFormat = labelFormat(transform = function(x) x))
 ```
 
 
