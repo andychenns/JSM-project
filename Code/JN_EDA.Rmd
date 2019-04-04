@@ -1,0 +1,62 @@
+---
+title: "JN_EDA"
+author: "Janhavi Nerurkar"
+date: "4/3/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+ggplot(NY, aes(x = borough)) + 
+  geom_bar(aes(fill = gen)) +
+  labs(title = "NYC Population by Borough and Immigrant Status", x = "Borough", y = "Population")
+```
+
+```{r}
+ggplot(NY, aes(x = borough, fill = gen)) + 
+  geom_bar(stat = "count", position = "fill") +
+  labs(title = "Proportion of NYC Population by Borough and Immigrant Status", x = "Borough", y = " %Population")
+```
+
+```{r}
+ggplot(NY, aes(x = year)) + 
+  geom_bar(aes(fill = gen)) +
+  labs(title = "NYC Population by Year and Immigrant Status", x = "Year", y = "Population")
+```
+
+```{r}
+ggplot(NY, aes(x = year, fill = gen)) + 
+  geom_bar(stat = "count", position = "fill") +
+  labs(title = "Proportion of NYC Population by Year and Immigrant Status", x = "Year", y = "%Population")
+```
+
+```{r}
+ggplot(NY, aes(x= year, y = npr, group = gen, color = gen))+
+  stat_summary(aes(y = npr), fun.y = mean, geom ="line") +
+  labs(title = "Average Number of People per Household by Year and Immigrant Status", x = "Year", y = "NPR")
+```
+
+```{r}
+ggplot(NY, aes(x= year, y = X_24b, group = gen, color = gen))+
+  stat_summary(aes(y = X_24b), fun.y = mean, geom ="line") +
+  labs(title = "Average Number of Bedrooms per Household by Year and Immigrant Status", x = "Year", y = "Bedrooms")
+```
+
+```{r}
+ggplot(NY, aes(x = sba)) + 
+  geom_bar(aes(fill = gen)) +
+  labs(title = "NYC Population by Sub-Borough and Immigrant Status", x = "Sub-Borough", y = "Population") +
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+```{r}
+ggplot(NY, aes(x = sba, fill = gen)) + 
+  geom_bar(stat = "count", position = "fill") +
+  labs(title = "Proportion of NYC Population by Sub-Borough and Immigrant Status", x = "Sub-Borough", y = "% Population") +
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+
