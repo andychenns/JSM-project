@@ -20,6 +20,7 @@ ggplot(NY, aes(x = borough)) +
 ```{r}
 ggplot(NY, aes(x = borough, fill = gen)) + 
   geom_bar(stat = "count", position = "fill") +
+  facet_wrap(~year)+
   labs(title = "Proportion of NYC Population by Borough and Immigrant Status", x = "Borough", y = " %Population")
 ```
 
@@ -54,7 +55,6 @@ ggplot(NY, aes(x= borough, y = npr, group = gen, color = gen))+
   labs(title = "Average Number of People per Household by Borough, Year and Immigrant Status", x = "Borough", y = "NPR")
 ```
 
-
 By Sub-Borough
 ```{r}
 ggplot(NY, aes(x = sba)) + 
@@ -77,4 +77,7 @@ ggplot(NY, aes(x= sba, y = npr, group = gen, color = gen))+
   labs(title = "Average Number of People per Household by Sub-Borough, Year and Immigrant Status", x = "Sub-Borough", y = "NPR")
 ```
 
+```{r}
+
+```
 
