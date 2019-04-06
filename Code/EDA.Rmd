@@ -1,0 +1,1138 @@
+---
+title: "EDA"
+author: "Doug Goon"
+date: "March 31, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+Reading 1996 and 1999 data; filtering for relevant rows.
+```{r}
+NY_1991 <- read.csv('NYCHVS_1991.csv', sep = ",", header = TRUE)
+NY_1991 = NY_1991[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+NY_1991$hhbirth <- NY_1991$X_7a
+NY_1991$dadbirth <- NY_1991$X_7b
+NY_1991$mombirth <- NY_1991$X_7c
+#Convert hhinc = 999999 to 0 for no income (before 2002)
+NY_1991$hhinc <- as.character(NY_1991$hhinc)
+NY_1991$hhinc[NY_1991$hhinc == "999999"] <- "0"
+
+
+NY_1993 <- read.csv('NYCHVS_1993.csv', sep = ",", header = TRUE)
+NY_1993 = NY_1993[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+NY_1993$hhbirth <- NY_1993$X_7a
+NY_1993$dadbirth <- NY_1993$X_7b
+NY_1993$mombirth <- NY_1993$X_7c
+#Convert hhinc = 999999 to 0 for no income (before 2002)
+NY_1993$hhinc <- as.character(NY_1993$hhinc)
+NY_1993$hhinc[NY_1993$hhinc == "999999"] <- "0"
+
+NY_1996 <- read.csv('NYCHVS_1996.csv', sep = ",", header = TRUE)
+NY_1996 = NY_1996[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+NY_1996$hhbirth <- NY_1996$X_7a
+NY_1996$dadbirth <- NY_1996$X_7b
+NY_1996$mombirth <- NY_1996$X_7c
+#Convert hhinc = 999999 to 0 for no income (before 2002)
+NY_1996$hhinc <- as.character(NY_1996$hhinc)
+NY_1996$hhinc[NY_1996$hhinc == "999999"] <- "0"
+
+NY_1999 <- read.csv('NYCHVS_1999.csv', sep = ",", header = TRUE)
+NY_1999 = NY_1999[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+NY_1999$hhbirth <- NY_1999$X_7a
+NY_1999$hhbirth[NY_1999$X_7a == 9] <- 10
+NY_1999$hhbirth[NY_1999$X_7a == 26] <- 19
+NY_1999$hhbirth[NY_1999$X_7a == 25] <- 14
+
+NY_1999$dadbirth <- NY_1999$X_7b
+NY_1999$dadbirth[NY_1999$X_7b == 9] <- 10
+NY_1999$dadbirth[NY_1999$X_7b == 26] <- 19
+NY_1999$dadbirth[NY_1999$X_7b == 25] <- 14
+
+NY_1999$mombirth <- NY_1999$X_7c
+NY_1999$mombirth[NY_1999$X_7c == 9] <- 10
+NY_1999$mombirth[NY_1999$X_7c == 26] <- 19
+NY_1999$mombirth[NY_1999$X_7c == 25] <- 14
+
+#Convert hhinc = 999999 to 0 for no income (before 2002)
+NY_1999$hhinc <- as.character(NY_1999$hhinc)
+NY_1999$hhinc[NY_1999$hhinc == "999999"] <- "0"
+
+NY_2002 <- read.csv('NYCHVS_2002.csv', sep = ",", header = TRUE)
+NY_2002 = NY_2002[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+
+NY_2002$hhbirth <- NY_2002$X_7a
+NY_2002$hhbirth[NY_2002$X_7a == 9] <- 10
+NY_2002$hhbirth[NY_2002$X_7a == 26] <- 19
+NY_2002$hhbirth[NY_2002$X_7a == 25] <- 14
+
+NY_2002$dadbirth <- NY_2002$X_7b
+NY_2002$dadbirth[NY_2002$X_7b == 9] <- 10
+NY_2002$dadbirth[NY_2002$X_7b == 26] <- 19
+NY_2002$dadbirth[NY_2002$X_7b == 25] <- 14
+
+NY_2002$mombirth <- NY_2002$X_7c
+NY_2002$mombirth[NY_2002$X_7c == 9] <- 10
+NY_2002$mombirth[NY_2002$X_7c == 26] <- 19
+NY_2002$mombirth[NY_2002$X_7c == 25] <- 14
+
+#Convert hhinc = 9999999 to 0 for no income (starting from 2002)
+NY_2002$hhinc <- as.character(NY_2002$hhinc)
+NY_2002$hhinc[NY_2002$hhinc == "9999999"] <- "0"
+
+NY_2005 <- read.csv('NYCHVS_2005.csv', sep = ",", header = TRUE)
+NY_2005 = NY_2005[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+
+NY_2005$hhbirth <- NY_2005$X_7a
+NY_2005$hhbirth[NY_2005$X_7a == 7] <- 10
+NY_2005$hhbirth[NY_2005$X_7a == 9] <- 10
+NY_2005$hhbirth[NY_2005$X_7a == 10] <- 11
+NY_2005$hhbirth[NY_2005$X_7a == 11] <- 12
+NY_2005$hhbirth[NY_2005$X_7a == 12] <- 13
+NY_2005$hhbirth[NY_2005$X_7a == 13] <- 14
+NY_2005$hhbirth[NY_2005$X_7a == 15] <- 24
+NY_2005$hhbirth[NY_2005$X_7a == 16] <- 15
+NY_2005$hhbirth[NY_2005$X_7a == 17] <- 16
+NY_2005$hhbirth[NY_2005$X_7a == 18] <- 17
+NY_2005$hhbirth[NY_2005$X_7a == 19] <- 18
+NY_2005$hhbirth[NY_2005$X_7a == 20] <- 19
+NY_2005$hhbirth[NY_2005$X_7a == 21] <- 19
+NY_2005$hhbirth[NY_2005$X_7a == 22] <- 20
+NY_2005$hhbirth[NY_2005$X_7a == 23] <- 21
+NY_2005$hhbirth[NY_2005$X_7a == 25] <- 23
+NY_2005$hhbirth[NY_2005$X_7a == 26] <- 24
+
+NY_2005$dadbirth <- NY_2005$X_7b
+NY_2005$dadbirth[NY_2005$X_7b == 7] <- 10
+NY_2005$dadbirth[NY_2005$X_7b == 9] <- 10
+NY_2005$dadbirth[NY_2005$X_7b == 10] <- 11
+NY_2005$dadbirth[NY_2005$X_7b == 11] <- 12
+NY_2005$dadbirth[NY_2005$X_7b == 12] <- 13
+NY_2005$dadbirth[NY_2005$X_7b == 13] <- 14
+NY_2005$dadbirth[NY_2005$X_7b == 15] <- 24
+NY_2005$dadbirth[NY_2005$X_7b == 16] <- 15
+NY_2005$dadbirth[NY_2005$X_7b == 17] <- 16
+NY_2005$dadbirth[NY_2005$X_7b == 18] <- 17
+NY_2005$dadbirth[NY_2005$X_7b == 19] <- 18
+NY_2005$dadbirth[NY_2005$X_7b == 20] <- 19
+NY_2005$dadbirth[NY_2005$X_7b == 21] <- 19
+NY_2005$dadbirth[NY_2005$X_7b == 22] <- 20
+NY_2005$dadbirth[NY_2005$X_7b == 23] <- 21
+NY_2005$dadbirth[NY_2005$X_7b == 25] <- 23
+NY_2005$dadbirth[NY_2005$X_7b == 26] <- 24
+
+NY_2005$mombirth <- NY_2005$X_7c
+NY_2005$mombirth[NY_2005$X_7c == 7] <- 10
+NY_2005$mombirth[NY_2005$X_7c == 9] <- 10
+NY_2005$mombirth[NY_2005$X_7c == 10] <- 11
+NY_2005$mombirth[NY_2005$X_7c == 11] <- 12
+NY_2005$mombirth[NY_2005$X_7c == 12] <- 13
+NY_2005$mombirth[NY_2005$X_7c == 13] <- 14
+NY_2005$mombirth[NY_2005$X_7c == 15] <- 24
+NY_2005$mombirth[NY_2005$X_7c == 16] <- 15
+NY_2005$mombirth[NY_2005$X_7c == 17] <- 16
+NY_2005$mombirth[NY_2005$X_7c == 18] <- 17
+NY_2005$mombirth[NY_2005$X_7c == 19] <- 18
+NY_2005$mombirth[NY_2005$X_7c == 20] <- 19
+NY_2005$mombirth[NY_2005$X_7c == 21] <- 19
+NY_2005$mombirth[NY_2005$X_7c == 22] <- 20
+NY_2005$mombirth[NY_2005$X_7c == 23] <- 21
+NY_2005$mombirth[NY_2005$X_7c == 25] <- 23
+NY_2005$mombirth[NY_2005$X_7c == 26] <- 24
+
+#Convert hhinc = 9999999 to 0 for no income (starting from 2002)
+NY_2005$hhinc <- as.character(NY_2005$hhinc)
+NY_2005$hhinc[NY_2005$hhinc == "9999999"] <- "0"
+
+NY_2008 <- read.csv('NYCHVS_2008.csv', sep = ",", header = TRUE)
+NY_2008 = NY_2008[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+
+NY_2008$hhbirth <- NY_2008$X_7a
+NY_2008$hhbirth[NY_2008$X_7a == 7] <- 10
+NY_2008$hhbirth[NY_2008$X_7a == 9] <- 10
+NY_2008$hhbirth[NY_2008$X_7a == 10] <- 11
+NY_2008$hhbirth[NY_2008$X_7a == 11] <- 12
+NY_2008$hhbirth[NY_2008$X_7a == 12] <- 13
+NY_2008$hhbirth[NY_2008$X_7a == 13] <- 14
+NY_2008$hhbirth[NY_2008$X_7a == 15] <- 24
+NY_2008$hhbirth[NY_2008$X_7a == 16] <- 15
+NY_2008$hhbirth[NY_2008$X_7a == 17] <- 16
+NY_2008$hhbirth[NY_2008$X_7a == 18] <- 17
+NY_2008$hhbirth[NY_2008$X_7a == 19] <- 18
+NY_2008$hhbirth[NY_2008$X_7a == 20] <- 19
+NY_2008$hhbirth[NY_2008$X_7a == 21] <- 19
+NY_2008$hhbirth[NY_2008$X_7a == 22] <- 20
+NY_2008$hhbirth[NY_2008$X_7a == 23] <- 21
+NY_2008$hhbirth[NY_2008$X_7a == 25] <- 23
+NY_2008$hhbirth[NY_2008$X_7a == 26] <- 24
+
+NY_2008$dadbirth <- NY_2008$X_7b
+NY_2008$dadbirth[NY_2008$X_7b == 7] <- 10
+NY_2008$dadbirth[NY_2008$X_7b == 9] <- 10
+NY_2008$dadbirth[NY_2008$X_7b == 10] <- 11
+NY_2008$dadbirth[NY_2008$X_7b == 11] <- 12
+NY_2008$dadbirth[NY_2008$X_7b == 12] <- 13
+NY_2008$dadbirth[NY_2008$X_7b == 13] <- 14
+NY_2008$dadbirth[NY_2008$X_7b == 15] <- 24
+NY_2008$dadbirth[NY_2008$X_7b == 16] <- 15
+NY_2008$dadbirth[NY_2008$X_7b == 17] <- 16
+NY_2008$dadbirth[NY_2008$X_7b == 18] <- 17
+NY_2008$dadbirth[NY_2008$X_7b == 19] <- 18
+NY_2008$dadbirth[NY_2008$X_7b == 20] <- 19
+NY_2008$dadbirth[NY_2008$X_7b == 21] <- 19
+NY_2008$dadbirth[NY_2008$X_7b == 22] <- 20
+NY_2008$dadbirth[NY_2008$X_7b == 23] <- 21
+NY_2008$dadbirth[NY_2008$X_7b == 25] <- 23
+NY_2008$dadbirth[NY_2008$X_7b == 26] <- 24
+
+NY_2008$mombirth <- NY_2008$X_7c
+NY_2008$mombirth[NY_2008$X_7c == 7] <- 10
+NY_2008$mombirth[NY_2008$X_7c == 9] <- 10
+NY_2008$mombirth[NY_2008$X_7c == 10] <- 11
+NY_2008$mombirth[NY_2008$X_7c == 11] <- 12
+NY_2008$mombirth[NY_2008$X_7c == 12] <- 13
+NY_2008$mombirth[NY_2008$X_7c == 13] <- 14
+NY_2008$mombirth[NY_2008$X_7c == 15] <- 24
+NY_2008$mombirth[NY_2008$X_7c == 16] <- 15
+NY_2008$mombirth[NY_2008$X_7c == 17] <- 16
+NY_2008$mombirth[NY_2008$X_7c == 18] <- 17
+NY_2008$mombirth[NY_2008$X_7c == 19] <- 18
+NY_2008$mombirth[NY_2008$X_7c == 20] <- 19
+NY_2008$mombirth[NY_2008$X_7c == 21] <- 19
+NY_2008$mombirth[NY_2008$X_7c == 22] <- 20
+NY_2008$mombirth[NY_2008$X_7c == 23] <- 21
+NY_2008$mombirth[NY_2008$X_7c == 25] <- 23
+NY_2008$mombirth[NY_2008$X_7c == 26] <- 24
+
+#Convert hhinc = 9999999 to 0 for no income (starting from 2002)
+NY_2008$hhinc <- as.character(NY_2008$hhinc)
+NY_2008$hhinc[NY_2008$hhinc == "9999999"] <- "0"
+
+NY_2011 <- read.csv('NYCHVS_2011.csv', sep = ",", header = TRUE)
+NY_2011 = NY_2011[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+
+NY_2011$hhbirth <- NY_2011$X_7a
+NY_2011$hhbirth[NY_2011$X_7a == 7] <- 10
+NY_2011$hhbirth[NY_2011$X_7a == 9] <- 10
+NY_2011$hhbirth[NY_2011$X_7a == 10] <- 11
+NY_2011$hhbirth[NY_2011$X_7a == 11] <- 12
+NY_2011$hhbirth[NY_2011$X_7a == 12] <- 13
+NY_2011$hhbirth[NY_2011$X_7a == 13] <- 14
+NY_2011$hhbirth[NY_2011$X_7a == 15] <- 24
+NY_2011$hhbirth[NY_2011$X_7a == 16] <- 15
+NY_2011$hhbirth[NY_2011$X_7a == 17] <- 16
+NY_2011$hhbirth[NY_2011$X_7a == 18] <- 17
+NY_2011$hhbirth[NY_2011$X_7a == 19] <- 18
+NY_2011$hhbirth[NY_2011$X_7a == 20] <- 19
+NY_2011$hhbirth[NY_2011$X_7a == 21] <- 19
+NY_2011$hhbirth[NY_2011$X_7a == 22] <- 20
+NY_2011$hhbirth[NY_2011$X_7a == 23] <- 21
+NY_2011$hhbirth[NY_2011$X_7a == 25] <- 23
+NY_2011$hhbirth[NY_2011$X_7a == 26] <- 24
+
+NY_2011$dadbirth <- NY_2011$X_7b
+NY_2011$dadbirth[NY_2011$X_7b == 7] <- 10
+NY_2011$dadbirth[NY_2011$X_7b == 9] <- 10
+NY_2011$dadbirth[NY_2011$X_7b == 10] <- 11
+NY_2011$dadbirth[NY_2011$X_7b == 11] <- 12
+NY_2011$dadbirth[NY_2011$X_7b == 12] <- 13
+NY_2011$dadbirth[NY_2011$X_7b == 13] <- 14
+NY_2011$dadbirth[NY_2011$X_7b == 15] <- 24
+NY_2011$dadbirth[NY_2011$X_7b == 16] <- 15
+NY_2011$dadbirth[NY_2011$X_7b == 17] <- 16
+NY_2011$dadbirth[NY_2011$X_7b == 18] <- 17
+NY_2011$dadbirth[NY_2011$X_7b == 19] <- 18
+NY_2011$dadbirth[NY_2011$X_7b == 20] <- 19
+NY_2011$dadbirth[NY_2011$X_7b == 21] <- 19
+NY_2011$dadbirth[NY_2011$X_7b == 22] <- 20
+NY_2011$dadbirth[NY_2011$X_7b == 23] <- 21
+NY_2011$dadbirth[NY_2011$X_7b == 25] <- 23
+NY_2011$dadbirth[NY_2011$X_7b == 26] <- 24
+
+NY_2011$mombirth <- NY_2011$X_7c
+NY_2011$mombirth[NY_2011$X_7c == 7] <- 10
+NY_2011$mombirth[NY_2011$X_7c == 9] <- 10
+NY_2011$mombirth[NY_2011$X_7c == 10] <- 11
+NY_2011$mombirth[NY_2011$X_7c == 11] <- 12
+NY_2011$mombirth[NY_2011$X_7c == 12] <- 13
+NY_2011$mombirth[NY_2011$X_7c == 13] <- 14
+NY_2011$mombirth[NY_2011$X_7c == 15] <- 24
+NY_2011$mombirth[NY_2011$X_7c == 16] <- 15
+NY_2011$mombirth[NY_2011$X_7c == 17] <- 16
+NY_2011$mombirth[NY_2011$X_7c == 18] <- 17
+NY_2011$mombirth[NY_2011$X_7c == 19] <- 18
+NY_2011$mombirth[NY_2011$X_7c == 20] <- 19
+NY_2011$mombirth[NY_2011$X_7c == 21] <- 19
+NY_2011$mombirth[NY_2011$X_7c == 22] <- 20
+NY_2011$mombirth[NY_2011$X_7c == 23] <- 21
+NY_2011$mombirth[NY_2011$X_7c == 25] <- 23
+NY_2011$mombirth[NY_2011$X_7c == 26] <- 24
+
+#Convert hhinc = 9999999 to 0 for no income (starting from 2002)
+NY_2011$hhinc <- as.character(NY_2011$hhinc)
+NY_2011$hhinc[NY_2011$hhinc == "9999999"] <- "0"
+
+NY_2014 <- read.csv('NYCHVS_2014.csv', sep = ",", header = TRUE)
+NY_2014 = NY_2014[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+
+NY_2014$hhbirth <- NY_2014$X_7a
+NY_2014$hhbirth[NY_2014$X_7a == 7] <- 10
+NY_2014$hhbirth[NY_2014$X_7a == 9] <- 10
+NY_2014$hhbirth[NY_2014$X_7a == 10] <- 11
+NY_2014$hhbirth[NY_2014$X_7a == 11] <- 12
+NY_2014$hhbirth[NY_2014$X_7a == 12] <- 13
+NY_2014$hhbirth[NY_2014$X_7a == 13] <- 14
+NY_2014$hhbirth[NY_2014$X_7a == 15] <- 24
+NY_2014$hhbirth[NY_2014$X_7a == 16] <- 15
+NY_2014$hhbirth[NY_2014$X_7a == 17] <- 16
+NY_2014$hhbirth[NY_2014$X_7a == 18] <- 17
+NY_2014$hhbirth[NY_2014$X_7a == 19] <- 18
+NY_2014$hhbirth[NY_2014$X_7a == 20] <- 19
+NY_2014$hhbirth[NY_2014$X_7a == 21] <- 19
+NY_2014$hhbirth[NY_2014$X_7a == 22] <- 20
+NY_2014$hhbirth[NY_2014$X_7a == 23] <- 21
+NY_2014$hhbirth[NY_2014$X_7a == 25] <- 23
+NY_2014$hhbirth[NY_2014$X_7a == 26] <- 24
+
+NY_2014$dadbirth <- NY_2014$X_7b
+NY_2014$dadbirth[NY_2014$X_7b == 7] <- 10
+NY_2014$dadbirth[NY_2014$X_7b == 9] <- 10
+NY_2014$dadbirth[NY_2014$X_7b == 10] <- 11
+NY_2014$dadbirth[NY_2014$X_7b == 11] <- 12
+NY_2014$dadbirth[NY_2014$X_7b == 12] <- 13
+NY_2014$dadbirth[NY_2014$X_7b == 13] <- 14
+NY_2014$dadbirth[NY_2014$X_7b == 15] <- 24
+NY_2014$dadbirth[NY_2014$X_7b == 16] <- 15
+NY_2014$dadbirth[NY_2014$X_7b == 17] <- 16
+NY_2014$dadbirth[NY_2014$X_7b == 18] <- 17
+NY_2014$dadbirth[NY_2014$X_7b == 19] <- 18
+NY_2014$dadbirth[NY_2014$X_7b == 20] <- 19
+NY_2014$dadbirth[NY_2014$X_7b == 21] <- 19
+NY_2014$dadbirth[NY_2014$X_7b == 22] <- 20
+NY_2014$dadbirth[NY_2014$X_7b == 23] <- 21
+NY_2014$dadbirth[NY_2014$X_7b == 25] <- 23
+NY_2014$dadbirth[NY_2014$X_7b == 26] <- 24
+
+NY_2014$mombirth <- NY_2014$X_7c
+NY_2014$mombirth[NY_2014$X_7c == 7] <- 10
+NY_2014$mombirth[NY_2014$X_7c == 9] <- 10
+NY_2014$mombirth[NY_2014$X_7c == 10] <- 11
+NY_2014$mombirth[NY_2014$X_7c == 11] <- 12
+NY_2014$mombirth[NY_2014$X_7c == 12] <- 13
+NY_2014$mombirth[NY_2014$X_7c == 13] <- 14
+NY_2014$mombirth[NY_2014$X_7c == 15] <- 24
+NY_2014$mombirth[NY_2014$X_7c == 16] <- 15
+NY_2014$mombirth[NY_2014$X_7c == 17] <- 16
+NY_2014$mombirth[NY_2014$X_7c == 18] <- 17
+NY_2014$mombirth[NY_2014$X_7c == 19] <- 18
+NY_2014$mombirth[NY_2014$X_7c == 20] <- 19
+NY_2014$mombirth[NY_2014$X_7c == 21] <- 19
+NY_2014$mombirth[NY_2014$X_7c == 22] <- 20
+NY_2014$mombirth[NY_2014$X_7c == 23] <- 21
+NY_2014$mombirth[NY_2014$X_7c == 25] <- 23
+NY_2014$mombirth[NY_2014$X_7c == 26] <- 24
+
+#Convert hhinc = 9999999 to 0 for no income (starting from 2002)
+NY_2014$hhinc <- as.character(NY_2014$hhinc)
+NY_2014$hhinc[NY_2014$hhinc == "9999999"] <- "0"
+
+NY_2017 <- read.csv('NYCHVS_2017.csv', sep = ",", header = TRUE)
+NY_2017 = NY_2017[-1,c("borough",
+"X_d3",
+"X_d4",
+"X_d5",
+"X_d6",
+"X_e1",
+"X_e2",
+"X_e3",
+"X_e4",
+"X_e5",
+"X_f1",
+"X_f2",
+"X_f3",
+"X_f6",
+"X_g3",
+"X_g4",
+"X_g5",
+"X_g6",
+"X_h",
+"X_i",
+"X_1b",
+"X_1c",
+"X_1e",
+"X_1f",
+"X_3",
+"X_4a",
+"X_5",
+"X_6",
+"X_7a",
+"X_7b",
+"X_7c",
+"X_24a",
+"X_24b",
+"X_25a",
+"X_25c",
+"X_26a",
+"X_26c",
+"X_27",
+"X_28a1",
+"X_28a2",
+"X_28b1",
+"X_28b2",
+"X_28c",
+"X_28d1",
+"X_28d2",
+"X_28e1",
+"X_28e2",
+"X_29",
+"X_35a",
+"X_36a",
+"X_36b",
+"X_37a",
+"X_37b",
+"X_38a",
+"hcr",
+"npr",
+"mgrent",
+"hhinc",
+"sub",
+"sba",
+"year")]
+
+NY_2017$hhbirth <- NY_2017$X_7a
+NY_2017$hhbirth[NY_2017$X_7a == 7] <- 10
+NY_2017$hhbirth[NY_2017$X_7a == 9] <- 10
+NY_2017$hhbirth[NY_2017$X_7a == 10] <- 11
+NY_2017$hhbirth[NY_2017$X_7a == 11] <- 12
+NY_2017$hhbirth[NY_2017$X_7a == 12] <- 13
+NY_2017$hhbirth[NY_2017$X_7a == 13] <- 14
+NY_2017$hhbirth[NY_2017$X_7a == 15] <- 24
+NY_2017$hhbirth[NY_2017$X_7a == 17] <- 15
+NY_2017$hhbirth[NY_2017$X_7a == 18] <- 17
+NY_2017$hhbirth[NY_2017$X_7a == 19] <- 18
+NY_2017$hhbirth[NY_2017$X_7a == 20] <- 19
+NY_2017$hhbirth[NY_2017$X_7a == 21] <- 19
+NY_2017$hhbirth[NY_2017$X_7a == 22] <- 20
+NY_2017$hhbirth[NY_2017$X_7a == 23] <- 21
+NY_2017$hhbirth[NY_2017$X_7a == 25] <- 23
+NY_2017$hhbirth[NY_2017$X_7a == 26] <- 24
+
+NY_2017$dadbirth <- NY_2017$X_7b
+NY_2017$dadbirth[NY_2017$X_7b == 7] <- 10
+NY_2017$dadbirth[NY_2017$X_7b == 9] <- 10
+NY_2017$dadbirth[NY_2017$X_7b == 10] <- 11
+NY_2017$dadbirth[NY_2017$X_7b == 11] <- 12
+NY_2017$dadbirth[NY_2017$X_7b == 12] <- 13
+NY_2017$dadbirth[NY_2017$X_7b == 13] <- 14
+NY_2017$dadbirth[NY_2017$X_7b == 15] <- 24
+NY_2017$dadbirth[NY_2017$X_7b == 17] <- 15
+NY_2017$dadbirth[NY_2017$X_7b == 18] <- 17
+NY_2017$dadbirth[NY_2017$X_7b == 19] <- 18
+NY_2017$dadbirth[NY_2017$X_7b == 20] <- 19
+NY_2017$dadbirth[NY_2017$X_7b == 21] <- 19
+NY_2017$dadbirth[NY_2017$X_7b == 22] <- 20
+NY_2017$dadbirth[NY_2017$X_7b == 23] <- 21
+NY_2017$dadbirth[NY_2017$X_7b == 25] <- 23
+NY_2017$dadbirth[NY_2017$X_7b == 26] <- 24
+
+NY_2017$mombirth <- NY_2017$X_7c
+NY_2017$mombirth[NY_2017$X_7c == 7] <- 10
+NY_2017$mombirth[NY_2017$X_7c == 9] <- 10
+NY_2017$mombirth[NY_2017$X_7c == 10] <- 11
+NY_2017$mombirth[NY_2017$X_7c == 11] <- 12
+NY_2017$mombirth[NY_2017$X_7c == 12] <- 13
+NY_2017$mombirth[NY_2017$X_7c == 13] <- 14
+NY_2017$mombirth[NY_2017$X_7c == 15] <- 24
+NY_2017$mombirth[NY_2017$X_7c == 17] <- 15
+NY_2017$mombirth[NY_2017$X_7c == 18] <- 17
+NY_2017$mombirth[NY_2017$X_7c == 19] <- 18
+NY_2017$mombirth[NY_2017$X_7c == 20] <- 19
+NY_2017$mombirth[NY_2017$X_7c == 21] <- 19
+NY_2017$mombirth[NY_2017$X_7c == 22] <- 20
+NY_2017$mombirth[NY_2017$X_7c == 23] <- 21
+NY_2017$mombirth[NY_2017$X_7c == 25] <- 23
+NY_2017$mombirth[NY_2017$X_7c == 26] <- 24
+
+#Convert hhinc = 9999999 to 0 for no income (starting from 2002)
+NY_2017$hhinc <- as.character(NY_2017$hhinc)
+NY_2017$hhinc[NY_2017$hhinc == "9999999"] <- "0"
+
+NY <- rbind(NY_1991, NY_1993, NY_1996, NY_1999, NY_2002, NY_2005, NY_2008, NY_2011, NY_2014, NY_2017)
+
+NY$gen <- ifelse(NY$hhbirth != 10, "1", ifelse(NY$mombirth != 10, "2", ifelse(NY$dadbirth != 10, "2", "0")))
+
+```
+
+```{r}
+library(tidyverse)
+#Convert hhinc from factor to numeric
+NY$hhinc <- as.numeric(as.character(NY$hhinc))
+#Remove birth place 98 (98 = not reported)
+#Convert birth place from factor to numeric
+NY$hhbirth <- as.numeric(as.character(NY$hhbirth))
+NY$dadbirth <- as.numeric(as.character(NY$dadbirth))
+NY$mombirth <- as.numeric(as.character(NY$mombirth))
+#Remove people with birth place 98
+NY<-NY %>% filter((`hhbirth` <= 97.5))
+NY<-NY %>% filter((`dadbirth` <= 97.5))
+NY<-NY %>% filter((`mombirth` <= 97.5))
+```
+
+```{r}
+#PLOT CONCENTRATION OF IMMIGRANTS BY BOROUGH AND YEAR
+#Subset first and second generation and American
+gen_0 <- NY %>% filter((`gen` == 0))
+gen_1 <- NY %>% filter((`gen` == 1))
+gen_2 <- NY %>% filter((`gen` == 2))
+
+#Plot Immigrant Population by Borough per Year
+ggplot(gen_0,aes(as.factor(gen_0$year),fill=as.factor(gen_0$borough)))+
+  geom_bar(position="fill") + labs(title = "Immigrant Population by Borough per Year", subtitle = "Non-Immigrants", x = "Year", y = "Count") + scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")) + scale_x_discrete(labels=c("91" = "1991", "93" = "1993", "96" = "1996", "99" = "1999")) 
+
+ggplot(gen_1,aes(as.factor(gen_1$year),fill=as.factor(gen_1$borough)))+
+  geom_bar(position="fill") + labs(title = "Immigrant Population by Borough per Year", subtitle = "First Generation Immigrants", x = "Year", y = "Count") + scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")) + scale_x_discrete(labels=c("91" = "1991", "93" = "1993", "96" = "1996", "99" = "1999")) 
+
+ggplot(gen_2,aes(as.factor(gen_2$year),fill=as.factor(gen_2$borough)))+
+  geom_bar(position="fill") + labs(title = "Immigrant Population by Borough per Year", subtitle = "Second Generation Immigrants", x = "Year", y = "Count") + scale_fill_discrete(name = "Borough", labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")) + scale_x_discrete(labels=c("91" = "1991", "93" = "1993", "96" = "1996", "99" = "1999")) 
+```
+
+```{r}
+wind_1991 <- gen_1 %>% filter((`year` == 91))
+wind_1991_bronx <- gen_1 %>% filter((`borough` == 1))
+wind_1991_brooklyn <- gen_1 %>% filter((`borough` == 2))
+wind_1991_manhattan <- gen_1 %>% filter((`borough` == 3))
+wind_1991_queens <- gen_1 %>% filter((`borough` == 4))
+wind_1991_staten <- gen_1 %>% filter((`borough` == 5))
+
+
+ggplot(wind_1991_bronx,aes(as.factor(wind_1991_bronx$sba),fill=as.factor(wind_1991_bronx$X_e3)))+
+  geom_bar(position="fill") + labs(title = "Broarded Up Windows by Sub-Boroughs", subtitle = "Bronx 1991: First Generation Immigrants", x = "Sub-Borough", y = "Count") + scale_fill_discrete(name = "Conditions", labels = c("Boarded Up", "Not Reported", "Not Boarded")) 
+#summary(wind_1991_bronx)
+```
+
+
+```{r}
+#HHINC - USE
+#Remove values equal to 999998 (999998 = NOT REPORTED)
+NY$hhinc <- as.character(NY$hhinc)
+subset_hhinc<-NY[ which( ! NY$hhinc %in% "999998") , ]
+NY$hhinc <- as.numeric(as.character(NY$hhinc))
+subset_hhinc$hhinc <- as.numeric(as.character(subset_hhinc$hhinc))
+#Create subset for mean hhinc by year and gen
+mean_hhinc<-aggregate(subset_hhinc[, 58], list(subset_hhinc$year, subset_hhinc$gen), mean)
+colnames(mean_hhinc)[1] <- "Year"
+colnames(mean_hhinc)[2] <- "Generation"
+
+#PLOT HHINC BY YEAR
+ggplot(mean_hhinc, aes(x=Year, y=x, group=Generation, colour=Generation)) +
+    geom_line() + geom_point() + labs(title = "Mean Householder Income by Year", x = "Year", y = "Income") +
+  scale_x_discrete(labels=c("91" = "1991", "93" = "1993", "96" = "1996", "99" = "1999")) 
+```
+
+```{r}
+hhinc_1991 <- subset_hhinc %>% filter((`year` == 91))
+hhinc_1991_bronx <- hhinc_1991 %>% filter((`borough` == 1))
+hhinc_1991_brooklyn <- hhinc_1991 %>% filter((`borough` == 2))
+hhinc_1991_manhattan <- hhinc_1991 %>% filter((`borough` == 3))
+hhinc_1991_queens <- hhinc_1991 %>% filter((`borough` == 4))
+hhinc_1991_staten <- hhinc_1991 %>% filter((`borough` == 5))
+#Create subset for mean hhinc by sba and gen
+mean_hhinc_1991_bronx<-aggregate(hhinc_1991_bronx[, 58], list(hhinc_1991_bronx$sba, hhinc_1991_bronx$gen), mean)
+colnames(mean_hhinc_1991_bronx)[1] <- "SBA"
+colnames(mean_hhinc_1991_bronx)[2] <- "Generation"
+
+ggplot(mean_hhinc_1991_bronx, aes(x=SBA, y=x, group=Generation, colour=Generation)) +
+    geom_line() + geom_point() + labs(title = "Mean Householder Income by Sub-Borough", subtitle = "1991 Bronx", x = "Sub-Borough", y = "Income") 
+
+mean_hhinc_1991_brooklyn<-aggregate(hhinc_1991_brooklyn[, 58], list(hhinc_1991_brooklyn$sba, hhinc_1991_brooklyn$gen), mean)
+colnames(mean_hhinc_1991_brooklyn)[1] <- "SBA"
+colnames(mean_hhinc_1991_brooklyn)[2] <- "Generation"
+
+ggplot(mean_hhinc_1991_brooklyn, aes(x=SBA, y=x, group=Generation, colour=Generation)) +
+    geom_line() + geom_point() + labs(title = "Mean Householder Income by Sub-Borough", subtitle = "1991 Brooklyn", x = "Sub-Borough", y = "Income")  
+
+mean_hhinc_1991_manhattan<-aggregate(hhinc_1991_manhattan[, 58], list(hhinc_1991_manhattan$sba, hhinc_1991_manhattan$gen), mean)
+colnames(mean_hhinc_1991_manhattan)[1] <- "SBA"
+colnames(mean_hhinc_1991_manhattan)[2] <- "Generation"
+
+ggplot(mean_hhinc_1991_manhattan, aes(x=SBA, y=x, group=Generation, colour=Generation)) +
+    geom_line() + geom_point() + labs(title = "Mean Householder Income by Sub-Borough", subtitle = "1991 Manhattan", x = "Sub-Borough", y = "Income") 
+
+mean_hhinc_1991_queens<-aggregate(hhinc_1991_queens[, 58], list(hhinc_1991_queens$sba, hhinc_1991_queens$gen), mean)
+colnames(mean_hhinc_1991_queens)[1] <- "SBA"
+colnames(mean_hhinc_1991_queens)[2] <- "Generation"
+
+ggplot(mean_hhinc_1991_queens, aes(x=SBA, y=x, group=Generation, colour=Generation)) +
+    geom_line() + geom_point() + labs(title = "Mean Householder Income by Sub-Borough", subtitle = "1991 Queens", x = "Sub-Borough", y = "Income") 
+
+mean_hhinc_1991_staten<-aggregate(hhinc_1991_staten[, 58], list(hhinc_1991_staten$sba, hhinc_1991_staten$gen), mean)
+colnames(mean_hhinc_1991_staten)[1] <- "SBA"
+colnames(mean_hhinc_1991_staten)[2] <- "Generation"
+
+ggplot(mean_hhinc_1991_staten, aes(x=SBA, y=x, group=Generation, colour=Generation)) +
+    geom_line() + geom_point() + labs(title = "Mean Householder Income by Sub-Borough", subtitle = "1991 Staten Island", x = "Sub-Borough", y = "Income") 
+```
+
+```{r}
+#MGRENT - USE
+#Convert mgrent column from factor to numeric
+NY$mgrent <- as.numeric(as.character(NY$mgrent))
+#Remove values greater than 9997 (9998 = NOT REPORTED, 9999/99999 = NA)
+subset_mgrent<-NY %>% filter((`mgrent` <= 9997))
+#Create subset for mean mgrent by year and gen
+mean_mgrent<-aggregate(subset_mgrent[, 57], list(subset_mgrent$year, subset_mgrent$gen), mean)
+colnames(mean_mgrent)[1] <- "Year"
+colnames(mean_mgrent)[2] <- "Generation"
+
+#PLOT MGRENT BY YEAR
+ggplot(mean_mgrent, aes(x=Year, y=x, group=Generation, colour=Generation)) +
+    geom_line() + geom_point() + labs(title = "Mean Monthly Gross Rent by Year", x = "Year", y = "Monthly Gross Rent") +
+  scale_x_discrete(labels=c("91" = "1991", "93" = "1993", "96" = "1996", "99" = "1999")) 
+```
