@@ -14,7 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(leaflet)
 library(geojsonio)
 library(readr)
-library(fuzzyjoin)
 library(sp)
 library(tidyverse)
 ```
@@ -26,12 +25,10 @@ nycity <- geojsonio::geojson_read("nyc_sub_borough_area.geojson", what = "sp")
 
 #Load 2017 data
 data_2014<- read_csv("NYCHVS 2014 Occupied File for ASA Challenge_CSV.csv", skip = 1)
-names(data_2014)[names(data_2014)=="`Borough and Sub-Borough Area`"] <- "bor_subb"
-
 data_1991 <-read_csv("NYCHVS 1991 Occupied File for ASA Challenge_CSV.csv", skip = 1)
-names(data_2014)[names(data_2014)=="`Borough and Sub-Borough Area`"] <- "bor_subb"
 
 test <- data_2014 %>% select(`Borough and Sub-Borough Area`,`Monthly contract rent`) %>% rename(bor_subb=`Borough and Sub-Borough Area`)
+
 
 averagerent<- test %>% filter(`Monthly contract rent`<99900) %>% group_by(bor_subb) %>% mutate(averagerent = mean(`Monthly contract rent`),medianrent=median(`Monthly contract rent`)) %>% distinct(bor_subb, .keep_all = TRUE)
 
@@ -39,13 +36,13 @@ averagerent<- test %>% filter(`Monthly contract rent`<99900) %>% group_by(bor_su
 
 test_birth <- data_2014 %>% select(`Borough and Sub-Borough Area`,`Place of Householder's Birth`) %>% rename(bor_subb=`Borough and Sub-Borough Area`)
 
-
 #Merge into one table
 
-subdata <- merge(nycity,test_birth, by = "bor_subb",duplicateGeoms = TRUE) 
+subdata <- merge(nycity,averagerent, by = "bor_subb",duplicateGeoms = TRUE) 
 
 #Color palette
 pal <- colorNumeric("viridis", NULL)
+
 
 leaflet(subdata) %>%
   addTiles() %>%
