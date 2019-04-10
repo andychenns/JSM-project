@@ -1050,4 +1050,7 @@ NY$mgrent <- as.numeric(as.character(NY$mgrent))
 subset_mgrent<-NY %>% filter((`mgrent` <= 9997))
 ```
 
-
+```{r}
+write.csv(NY, file = 'NY.csv')
+save(NY, file = 'NY.Rda')
+```
