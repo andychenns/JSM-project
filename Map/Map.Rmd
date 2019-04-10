@@ -27,7 +27,7 @@ nycity <- geojsonio::geojson_read("nyc_sub_borough_area.geojson", what = "sp")
 data_2014<- read_csv("NYCHVS 2014 Occupied File for ASA Challenge_CSV.csv", skip = 1)
 data_1991 <-read_csv("NYCHVS 1991 Occupied File for ASA Challenge_CSV.csv", skip = 1)
 
-test <- data_2014 %>% select(`Borough and Sub-Borough Area`,`Monthly contract rent`) %>% rename(bor_subb=`Borough and Sub-Borough Area`)
+test <- data_2014 %>% select(`Borough and Sub-Borough Area`,`Monthly contract rent`) %>% rename(bor_subb = `Borough and Sub-Borough Area`)
 
 
 averagerent<- test %>% filter(`Monthly contract rent`<99900) %>% group_by(bor_subb) %>% mutate(averagerent = mean(`Monthly contract rent`),medianrent=median(`Monthly contract rent`)) %>% distinct(bor_subb, .keep_all = TRUE)
@@ -112,4 +112,5 @@ leaflet(map_data_fico) %>%
   addProviderTiles("CartoDB.Positron") %>% 
   setView(-73.91, 40.70, zoom = 10)
 ```
+
 

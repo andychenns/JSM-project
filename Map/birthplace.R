@@ -13,25 +13,43 @@ load("~/Desktop/JSM project/JSM/Data/NY.Rda")
 NY$mgrent <- as.numeric(NY$mgrent)
 NY$year <- as.numeric(NY$year)
 
-#Construct dataframes
-test <- NY %>% select("year","sba","mgrent","hhbirth","hhinc") %>% 
-  rename(bor_subb=sba)%>% filter(mgrent<9999, hhinc <9000000) %>% 
-  group_by(year,bor_subb) %>% summarise(averagerent = mean(mgrent),
-                                 medianrent= median(mgrent),
-                                 aveincome= mean(hhinc),
-                                 medincome= median(hhinc))
 
-#User interface                             
+#Construct dataframes
+NY$count <- rep(1, nrow(NY))
+NY$hh_birth <- as.factor(NY$hh_birth)
+
+test <- NY %>% select("year","sba","hh_birth","dad_birth","mom_birth","count") %>% 
+  rename(bor_subb=sba) %>%  
+  group_by(year,bor_subb) %>% mutate(countT=sum(count)) %>%
+  group_by(year,bor_subb,hh_birth) %>%
+  mutate(countS= sum(count))%>%
+  mutate(per=countS/countT) %>% distinct(year, bor_subb, hh_birth,per)
+
+            
 
 ui <- fluidPage(
+  #Give it title
+  titlePanel("Birthplace"),
+  #Slider to slect which year
   sliderInput(inputId = "slider",
               label = "Years",
               min = 1991,
               max = 2017 ,
               value = 1991),
-  leafletOutput("my_leaf")
+  sidebarLayout(
+   #Select the exact birthplace
+     sidebarPanel(
+      selectInput("birthplace", "Birthplace:",
+                  choices= unique(NY[,66])),
+      selectInput("generation", "Generation:",
+                  choices = c("First generation","Second generation"))
+    
+  ),
+  mainPanel(
+    leafletOutput("my_leaf")
+    )
 )
-
+)
 
 server <- function(input, output, session){
   
@@ -45,13 +63,14 @@ server <- function(input, output, session){
   })
   
   a<-test[test$year == 1994,]
-
+  
   ## filter data
   df_filtered <- reactive({
     test<-test[test$year == input$slider, ]
+    test<-test[test$hh_birth == input$birthplace,]
     df <- merge(nycity,test, by = "bor_subb",duplicateGeoms = TRUE)    
   })
-
+  
   ## respond to the filtered data
   observe({
     
@@ -59,14 +78,12 @@ server <- function(input, output, session){
     
     leafletProxy(mapId = "my_leaf", data = df_filtered()) %>%
       
-      addPolygons( fillColor=~pal(log10(averagerent)),smoothFactor = 0.5, 
+      addPolygons( fillColor=~pal((per)),smoothFactor = 0.5, 
                    fillOpacity = 1,weight=1,highlightOptions = 
                      highlightOptions(color = "white", weight = 2.5,  
-                bringToFront = TRUE),label = ~paste0(bor_subb, ": ", "Average rent  ",
-                                                     formatC(averagerent, big.mark = ","),"  Median rent  ", 
-                                                     formatC(medianrent,big.mark = ","))) %>%
-      addLegend(pal=pal, values = ~log10(averagerent), opacity = 1.0,
-                labFormat = labelFormat(transform = function(x) round(10^x)),layerId = "foo")
+                                      bringToFront = TRUE)) %>%
+      addLegend(pal=pal, values = ~(per), opacity = 1.0,
+               layerId = "foo")
   })
   
   
