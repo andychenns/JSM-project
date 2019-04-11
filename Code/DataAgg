@@ -981,5 +981,7 @@ NY$X_24a <-as.numeric(NY$X_24a)
 
 NY$hhinc[NY$hhinc == 999998] <- 0
 
+NY$mgrent[NY$mgrent %in% c(9998,9999,3037,3085,3820,4520,4648,7792,6967,7748,7292)] <- 0
+
 ##write.csv(NY, file = 'NY.csv')
 ##save(NY, file = 'NY.Rda')
