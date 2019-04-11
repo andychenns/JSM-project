@@ -11,15 +11,25 @@ colnames(NY)
 ```
 
 ```{r Cleaning}
-NY$mgrent <- gsub("[^0-9]", "", NY$mgrent)
-NY$mgrent <- as.numeric(NY$mgrent)
+##NY$mgrent <- gsub("[^0-9]", "", NY$mgrent)
+#NY$mgrent <- as.numeric(NY$mgrent)
 
-NY$npr <- gsub("[^0-9]", "", NY$npr)
-NY$npr <-as.numeric(NY$npr)
+##NY$npr <- gsub("[^0-9]", "", NY$npr)
+##NY$npr <-as.numeric(NY$npr)
 
-agg_NY <- aggregate(NY[,56:58], by = list(NY$year, NY$sba), FUN = mean, na.rm = TRUE)
-colnames(agg_NY) <- c("Year", "Sub-Borough","Avg_NPR", "Avg_Rent", "Avg_Income")
+NY$X_24a <- gsub("[^0-9]", "", NY$X_24a)
+NY$X_24a <-as.numeric(NY$X_24a)
 
-table(NY$npr)
+##save(NY, file = 'NY.Rda')
+
+##table(NY$X_24a)
+```
+
+
+```{r Aggregation}
+agg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a")], by = list(NY$year, NY$sba), FUN = mean, na.rm = TRUE)
+colnames(agg_NY) <- c("Year", "Sub-Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms")
+agg_NY$Rent_Inc <- agg_NY$Avg_Rent/agg_NY$Avg_Income
+agg_NY$People_Room <- agg_NY$Avg_NPR/agg_NY$Avg_Rooms
 ```
 

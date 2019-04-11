@@ -974,5 +974,8 @@ NY$mgrent <- as.numeric(NY$mgrent)
 NY$npr <- gsub("[^0-9]", "", NY$npr)
 NY$npr <-as.numeric(NY$npr)
 
+NY$X_24a <- gsub("[^0-9]", "", NY$X_24a)
+NY$X_24a <-as.numeric(NY$X_24a)
+
 ##write.csv(NY, file = 'NY.csv')
 ##save(NY, file = 'NY.Rda')
