@@ -6,10 +6,15 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+##load("~/JSM/Data/NY.Rda")
+colnames(NY)
 ```
 
 ```{r}
+NY$mgrent <- gsub("[^0-9]", "", NY$mgrent)
+NY$mgrent <- as.numeric(NY$mgrent)
 
+agg_NY <- aggregate(NY[,57:58], by = list(NY$year, NY$sba), FUN = mean, na.rm = TRUE)
+colnames(agg_NY) <- c("Year", "Sub-Borough","Avg Rent", "Avg Income")
 ```
 
