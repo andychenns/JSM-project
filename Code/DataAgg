@@ -979,5 +979,7 @@ NY$npr <-as.numeric(NY$npr)
 NY$X_24a <- gsub("[^0-9]", "", NY$X_24a)
 NY$X_24a <-as.numeric(NY$X_24a)
 
+NY$hhinc[NY$hhinc == 999998] <- 0
+
 ##write.csv(NY, file = 'NY.csv')
 ##save(NY, file = 'NY.Rda')
