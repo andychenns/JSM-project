@@ -7,7 +7,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 ##load("~/JSM/Data/NY.Rda")
-colnames(NY)
+library(ggplot2)
 ```
 
 ```{r Cleaning}
@@ -17,8 +17,10 @@ colnames(NY)
 ##NY$npr <- gsub("[^0-9]", "", NY$npr)
 ##NY$npr <-as.numeric(NY$npr)
 
-NY$X_24a <- gsub("[^0-9]", "", NY$X_24a)
-NY$X_24a <-as.numeric(NY$X_24a)
+##NY$X_24a <- gsub("[^0-9]", "", NY$X_24a)
+##NY$X_24a <-as.numeric(NY$X_24a)
+
+##NY$hhinc[NY$hhinc >= 999998] <- 0
 
 ##save(NY, file = 'NY.Rda')
 
@@ -28,8 +30,13 @@ NY$X_24a <-as.numeric(NY$X_24a)
 
 ```{r Aggregation}
 agg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a")], by = list(NY$year, NY$sba), FUN = mean, na.rm = TRUE)
-colnames(agg_NY) <- c("Year", "Sub-Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms")
+colnames(agg_NY) <- c("Year", "Sub_Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms")
 agg_NY$Rent_Inc <- agg_NY$Avg_Rent/agg_NY$Avg_Income
 agg_NY$People_Room <- agg_NY$Avg_NPR/agg_NY$Avg_Rooms
+```
+
+```{r}
+ggplot(data = subset(agg_NY, agg_NY$Sub_Borough %in% c("301")), aes(x = Year, y = Avg_Income), group = 1) +
+  geom_point()
 ```
 
