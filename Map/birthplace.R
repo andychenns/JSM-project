@@ -16,16 +16,37 @@ NY$year <- as.numeric(NY$year)
 
 #Construct dataframes
 NY$count <- rep(1, nrow(NY))
-NY$hh_birth <- as.factor(NY$hh_birth)
 
 test <- NY %>% select("year","sba","hh_birth","dad_birth","mom_birth","count") %>% 
   rename(bor_subb=sba) %>%  
   group_by(year,bor_subb) %>% mutate(countT=sum(count)) %>%
   group_by(year,bor_subb,hh_birth) %>%
   mutate(countS= sum(count))%>%
-  mutate(per=countS/countT) %>% distinct(year, bor_subb, hh_birth,per)
+  mutate(per=countS/countT) %>% distinct(year, bor_subb, hh_birth,per) 
 
-            
+#Second generation dad dataframe
+test_dad <- NY %>% select("year","sba","hh_birth","dad_birth","mom_birth","count") %>%
+  rename(bor_subb=sba) %>%
+  group_by(year,bor_subb) %>% mutate(countT = sum(count)) %>% 
+  filter(hh_birth == 'USA') %>% filter(dad_birth != "USA"| mom_birth != "USA") %>%
+  group_by(year,bor_subb,dad_birth) %>%
+  mutate(countS= sum(count))%>%
+  mutate(per_dad=countS/countT) %>% distinct(year, bor_subb, dad_birth,per_dad)
+  
+
+#Second generation mom dataframe
+
+test_mom <- NY %>% select("year","sba","hh_birth","dad_birth","mom_birth","count") %>%
+  rename(bor_subb=sba) %>%
+  group_by(year,bor_subb) %>% mutate(countT = sum(count)) %>% 
+  filter(hh_birth == 'USA') %>% filter(dad_birth != "USA"| mom_birth != "USA") %>%
+  group_by(year,bor_subb,mom_birth) %>%
+  mutate(countM= sum(count))%>%
+  mutate(per_mom=countM/countT) %>% distinct(year, bor_subb, mom_birth,per_mom)
+
+#Combine them together
+test <- left_join(test, test_dad, by=c('year'='year', 'bor_subb' = 'bor_subb','hh_birth'='dad_birth'))
+test <- left_join(test, test_mom, by= c('year'='year', 'bor_subb' = 'bor_subb','hh_birth' = 'mom_birth'))
 
 ui <- fluidPage(
   #Give it title
@@ -42,7 +63,8 @@ ui <- fluidPage(
       selectInput("birthplace", "Birthplace:",
                   choices= unique(NY[,66])),
       selectInput("generation", "Generation:",
-                  choices = c("First generation","Second generation"))
+                  choices = c("First generation" = 'per',"Second generation dad"='per_dad', 
+                              "Second generation mom"='per_mom'))
     
   ),
   mainPanel(
@@ -66,8 +88,10 @@ server <- function(input, output, session){
   
   ## filter data
   df_filtered <- reactive({
+    test<-test %>% select(year, bor_subb, hh_birth, input$generation)
     test<-test[test$year == input$slider, ]
     test<-test[test$hh_birth == input$birthplace,]
+    colnames(test)[4]<- "per"
     df <- merge(nycity,test, by = "bor_subb",duplicateGeoms = TRUE)    
   })
   
@@ -78,7 +102,7 @@ server <- function(input, output, session){
     
     leafletProxy(mapId = "my_leaf", data = df_filtered()) %>%
       
-      addPolygons( fillColor=~pal((per)),smoothFactor = 0.5, 
+      addPolygons( fillColor=~pal(per),smoothFactor = 0.5, 
                    fillOpacity = 1,weight=1,highlightOptions = 
                      highlightOptions(color = "white", weight = 2.5,  
                                       bringToFront = TRUE)) %>%
