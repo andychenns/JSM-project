@@ -968,5 +968,11 @@ NY <- rbind(NY_1991, NY_1993, NY_1996, NY_1999, NY_2002, NY_2005, NY_2008, NY_20
 
 NY$gen <- ifelse(NY$hhbirth != 10, "1", ifelse(NY$mombirth != 10, "2", ifelse(NY$dadbirth != 10, "2", "0")))
 
+NY$mgrent <- gsub("[^0-9]", "", NY$mgrent)
+NY$mgrent <- as.numeric(NY$mgrent)
+
+NY$npr <- gsub("[^0-9]", "", NY$npr)
+NY$npr <-as.numeric(NY$npr)
+
 ##write.csv(NY, file = 'NY.csv')
 ##save(NY, file = 'NY.Rda')
