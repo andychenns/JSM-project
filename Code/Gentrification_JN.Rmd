@@ -1,0 +1,60 @@
+---
+title: "Gentrification"
+author: "Janhavi Nerurkar"
+date: "4/9/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+##load("~/JSM/Data/NY.Rda")
+library(ggplot2)
+```
+
+```{r Cleaning}
+##NY$mgrent <- gsub("[^0-9]", "", NY$mgrent)
+#NY$mgrent <- as.numeric(NY$mgrent)
+
+##NY$npr <- gsub("[^0-9]", "", NY$npr)
+##NY$npr <-as.numeric(NY$npr)
+
+##NY$X_24a <- gsub("[^0-9]", "", NY$X_24a)
+##NY$X_24a <-as.numeric(NY$X_24a)
+
+##NY$hhinc[NY$hhinc == 999998] <- 0
+
+# NY$mgrent[NY$mgrent == 9998] <- 0
+# NY$mgrent[NY$mgrent == 9999] <- 0
+# NY$mgrent[NY$mgrent == 3037] <- 0
+# NY$mgrent[NY$mgrent == 3085] <- 0
+# NY$mgrent[NY$mgrent == 3820] <- 0
+# NY$mgrent[NY$mgrent == 4520] <- 0
+# NY$mgrent[NY$mgrent == 4648] <- 0
+# NY$mgrent[NY$mgrent == 7792] <- 0
+# NY$mgrent[NY$mgrent == 6967] <- 0
+# NY$mgrent[NY$mgrent == 7748] <- 0
+# NY$mgrent[NY$mgrent == 7292] <- 0
+# NY$mgrent[NY$mgrent == 99999] <- 0
+
+##save(NY, file = 'NY.Rda')
+
+##table(NY$X_24a)
+```
+
+```{r Aggregation}
+agg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a")], by = list(NY$year,NY$borough, NY$sba), FUN = mean, na.rm = TRUE)
+colnames(agg_NY) <- c("Year", "Borough", "Sub_Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms")
+agg_NY$Rent_Inc <- (agg_NY$Avg_Rent*12)/agg_NY$Avg_Income
+agg_NY$People_Room <- agg_NY$Avg_NPR/agg_NY$Avg_Rooms
+
+##save(agg_NY, file = 'agg_NY.Rda')
+```
+
+```{r}
+ggplot(data = subset(agg_NY, agg_NY$Sub_Borough %in% c("301")), aes(x = Year, y = Avg_Income), group = 1) +
+  geom_point()
+```
+```{r}
+ggplot(data = subset(agg_NY, agg_NY$Borough %in% c("1")), aes(x = Year, y = Avg_Income), group = 1) +
+  geom_point()
+```
+

@@ -67,7 +67,7 @@ ggplot(NY, aes(x = sba)) +
 ggplot(NY, aes(x = sba, fill = gen)) + 
   geom_bar(stat = "count", position = "fill") +
   labs(title = "Proportion of NYC Population by Sub-Borough and Immigrant Status", x = "Sub-Borough", y = "% Population") +
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 ```{r}
