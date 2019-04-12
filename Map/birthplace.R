@@ -4,6 +4,7 @@ library(geojsonio)
 library(sp)
 library(readr)
 library(tidyverse)
+library(reshape2)
 #Read data
 
 nycity <- geojsonio::geojson_read("~/Desktop/JSM project/JSM/Map/nyc_sub_borough_area.geojson", what = "sp")
@@ -13,20 +14,21 @@ load("~/Desktop/JSM project/JSM/Data/NY.Rda")
 NY$mgrent <- as.numeric(NY$mgrent)
 NY$year <- as.numeric(NY$year)
 
-
 #Construct dataframes
 NY$count <- rep(1, nrow(NY))
 
-test <- NY %>% select("year","sba","hh_birth","dad_birth","mom_birth","count") %>% 
-  rename(bor_subb=sba) %>%  
-  group_by(year,bor_subb) %>% mutate(countT=sum(count)) %>%
-  group_by(year,bor_subb,hh_birth) %>%
-  mutate(countS= sum(count))%>%
-  mutate(per=countS/countT) %>% distinct(year, bor_subb, hh_birth,per) 
+test <- NY %>% dplyr::select("year","sba","hh_birth","dad_birth","mom_birth","count") %>% 
+  dplyr::rename(bor_subb=sba) %>%  
+  dplyr::group_by(year,bor_subb) %>% 
+           dplyr::mutate(countT=sum(count)) %>% 
+           dplyr::group_by(year,bor_subb,hh_birth) %>% 
+           dplyr::mutate(countS= sum(count)) %>% 
+           dplyr::mutate(per=countS/countT) %>% 
+           dplyr::distinct(year, bor_subb, hh_birth,per) 
 
 #Second generation dad dataframe
-test_dad <- NY %>% select("year","sba","hh_birth","dad_birth","mom_birth","count") %>%
-  rename(bor_subb=sba) %>%
+test_dad <- NY %>% dplyr::select("year","sba","hh_birth","dad_birth","mom_birth","count") %>%
+  dplyr::rename(bor_subb=sba) %>%
   group_by(year,bor_subb) %>% mutate(countT = sum(count)) %>% 
   filter(hh_birth == 'USA') %>% filter(dad_birth != "USA"| mom_birth != "USA") %>%
   group_by(year,bor_subb,dad_birth) %>%
@@ -36,8 +38,8 @@ test_dad <- NY %>% select("year","sba","hh_birth","dad_birth","mom_birth","count
 
 #Second generation mom dataframe
 
-test_mom <- NY %>% select("year","sba","hh_birth","dad_birth","mom_birth","count") %>%
-  rename(bor_subb=sba) %>%
+test_mom <- NY %>% dplyr::select("year","sba","hh_birth","dad_birth","mom_birth","count") %>%
+  dplyr::rename(bor_subb=sba) %>%
   group_by(year,bor_subb) %>% mutate(countT = sum(count)) %>% 
   filter(hh_birth == 'USA') %>% filter(dad_birth != "USA"| mom_birth != "USA") %>%
   group_by(year,bor_subb,mom_birth) %>%
