@@ -35,8 +35,8 @@ library(ggplot2)
 # NY$mgrent[NY$mgrent == 7292] <- 0
 # NY$mgrent[NY$mgrent == 99999] <- 0
 
-##NY$X_24a <- gsub("[^0-9]", "", NY$X_24a)
-NY$X_1c <-as.numeric(NY$X_1c)
+# NY$X_1c <- gsub("[^0-9]", "", NY$X_1c)
+# NY$X_1c <-as.numeric(NY$X_1c)
 
 ##save(NY, file = 'NY.Rda')
 
@@ -44,7 +44,7 @@ NY$X_1c <-as.numeric(NY$X_1c)
 ```
 
 ```{r Aggregation}
-agg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a")], by = list(NY$year,NY$borough, NY$sba), FUN = mean, na.rm = TRUE)
+agg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a", "X_1c")], by = list(NY$year,NY$borough, NY$sba), FUN = mean, na.rm = TRUE)
 colnames(agg_NY) <- c("Year", "Borough", "Sub_Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms")
 agg_NY$Rent_Inc <- (agg_NY$Avg_Rent*12)/agg_NY$Avg_Income
 agg_NY$People_Room <- agg_NY$Avg_NPR/agg_NY$Avg_Rooms
@@ -62,6 +62,6 @@ agg_NY$People_Room <- agg_NY$Avg_NPR/agg_NY$Avg_Rooms
 ```
 
 ```{r}
-table(NY$X_1c)
+##table(NY$X_1c)
 ```
 
