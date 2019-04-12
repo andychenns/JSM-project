@@ -44,12 +44,18 @@ library(ggplot2)
 ```
 
 ```{r Aggregation}
-agg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a", "X_1c")], by = list(NY$year,NY$borough, NY$sba), FUN = mean, na.rm = TRUE)
-colnames(agg_NY) <- c("Year", "Borough", "Sub_Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms")
-agg_NY$Rent_Inc <- (agg_NY$Avg_Rent*12)/agg_NY$Avg_Income
-agg_NY$People_Room <- agg_NY$Avg_NPR/agg_NY$Avg_Rooms
+#Mean
+avg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a", "X_1c")], by = list(NY$year,NY$borough, NY$sba), FUN = mean, na.rm = TRUE)
+colnames(avg_NY) <- c("Year", "Borough", "Sub_Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms", "Avg_Age")
+avg_NY$Rent_Inc <- (avg_NY$Avg_Rent*12)/avg_NY$Avg_Income
+avg_NY$People_Room <- avg_NY$Avg_NPR/avg_NY$Avg_Rooms
 
-##save(agg_NY, file = 'agg_NY.Rda')
+#Median
+med_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a", "X_1c")], by = list(NY$year,NY$borough, NY$sba), FUN = median, na.rm = TRUE)
+colnames(med_NY) <- c("Year", "Borough", "Sub_Borough","Med_NPR", "Med_Rent", "Med_Income", "Med_Rooms", "Med_Age")
+
+##save(avg_NY, file = 'avg_NY.Rda')
+##save(med_NY, file = 'med_NY.Rda')
 ```
 
 ```{r}
