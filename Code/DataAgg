@@ -994,5 +994,10 @@ NY$mgrent[NY$mgrent == 7748] <- 0
 NY$mgrent[NY$mgrent == 7292] <- 0
 NY$mgrent[NY$mgrent == 99999] <- 0
 
+#Apr 11 Edits
+
+NY$X_1c <- gsub("[^0-9]", "", NY$X_1c)
+NY$X_1c <-as.numeric(NY$X_1c)
+
 ##write.csv(NY, file = 'NY.csv')
 ##save(NY, file = 'NY.Rda')

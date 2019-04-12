@@ -35,6 +35,9 @@ library(ggplot2)
 # NY$mgrent[NY$mgrent == 7292] <- 0
 # NY$mgrent[NY$mgrent == 99999] <- 0
 
+##NY$X_24a <- gsub("[^0-9]", "", NY$X_24a)
+NY$X_1c <-as.numeric(NY$X_1c)
+
 ##save(NY, file = 'NY.Rda')
 
 ##table(NY$X_24a)
@@ -50,11 +53,15 @@ agg_NY$People_Room <- agg_NY$Avg_NPR/agg_NY$Avg_Rooms
 ```
 
 ```{r}
-ggplot(data = subset(agg_NY, agg_NY$Sub_Borough %in% c("301")), aes(x = Year, y = Avg_Income), group = 1) +
-  geom_point()
+# ggplot(data = subset(agg_NY, agg_NY$Sub_Borough %in% c("301")), aes(x = Year, y = Avg_Income), group = 1) +
+#   geom_point()
 ```
 ```{r}
-ggplot(data = subset(agg_NY, agg_NY$Borough %in% c("1")), aes(x = Year, y = Avg_Income), group = 1) +
-  geom_point()
+# ggplot(data = subset(agg_NY, agg_NY$Borough %in% c("1")), aes(x = Year, y = Avg_Income), group = 1) +
+#   geom_point()
+```
+
+```{r}
+table(NY$X_1c)
 ```
 
