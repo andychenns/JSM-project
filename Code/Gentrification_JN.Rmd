@@ -71,6 +71,27 @@ colnames(med_NY) <- c("Year", "Borough", "Sub_Borough","Med_NPR", "Med_Rent", "M
 gentri <- c("201", "308", "302", "204", "309", "307", "203", "208", "310", "101", "401", "207", "102", "216", "209")
 avg_NY$Gentrified <- 0
 avg_NY$Gentrified[avg_NY$Sub_Borough %in% gentri] <- 1
-table(avg_NY$Sub_Borough, avg_NY$Gentrified)
+##table(avg_NY$Sub_Borough, avg_NY$Gentrified)
+```
+
+```{r Models}
+#Rent only
+model1 <- glm(Gentrified ~ Avg_Rent, data = avg_NY, family = "binomial")
+summary(model1)
+```
+```{r}
+#Income only
+model2 <- glm(Gentrified ~ Avg_Income, data = avg_NY, family = "binomial")
+summary(model2)
+```
+```{r}
+#Rent & Income
+model3 <- glm(Gentrified ~ Avg_Rent + Avg_Income, data = avg_NY, family = "binomial")
+summary(model3)
+```
+```{r}
+#Rent, Income & Interaction
+model4 <- glm(Gentrified ~ Avg_Rent + Avg_Income + Avg_Rent*Avg_Income, data = avg_NY, family = "binomial")
+summary(model4)
 ```
 
