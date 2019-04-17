@@ -58,7 +58,7 @@ colnames(med_NY) <- c("Year", "Borough", "Sub_Borough","Med_NPR", "Med_Rent", "M
 ##save(med_NY, file = 'med_NY.Rda')
 ```
 
-```{r}
+```{r Plots}
 # ggplot(data = subset(agg_NY, agg_NY$Sub_Borough %in% c("301")), aes(x = Year, y = Avg_Income), group = 1) +
 #   geom_point()
 ```
@@ -67,7 +67,10 @@ colnames(med_NY) <- c("Year", "Borough", "Sub_Borough","Med_NPR", "Med_Rent", "M
 #   geom_point()
 ```
 
-```{r}
-##table(NY$X_1c)
+```{r Gentrified Sub-Boroughs}
+gentri <- c("201", "308", "302", "204", "309", "307", "203", "208", "310", "101", "401", "207", "102", "216", "209")
+avg_NY$Gentrified <- 0
+avg_NY$Gentrified[avg_NY$Sub_Borough %in% gentri] <- 1
+table(avg_NY$Sub_Borough, avg_NY$Gentrified)
 ```
 
