@@ -94,4 +94,8 @@ summary(model3)
 model4 <- glm(Gentrified ~ Avg_Rent + Avg_Income + Avg_Rent*Avg_Income, data = avg_NY, family = "binomial")
 summary(model4)
 ```
+```{r}
+model5 <- glm(Gentrified ~ factor(Borough) +  Avg_Rent + Avg_Income + Avg_Rent*Avg_Income + Avg_NPR, data = avg_NY, family = "binomial")
+summary(model5)
+```
 
