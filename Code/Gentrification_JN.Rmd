@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 ##load("~/JSM/Data/NY.Rda")
 library(ggplot2)
+library(dplyr)
 ```
 
 ```{r Cleaning}
@@ -74,28 +75,31 @@ avg_NY$Gentrified[avg_NY$Sub_Borough %in% gentri] <- 1
 ##table(avg_NY$Sub_Borough, avg_NY$Gentrified)
 ```
 
+```{r Percentages}
+pct_NY <- mutate(avg_NY, Row = 1:n()) %>%
+  group_by(Sub_Borough) %>%
+  mutate(Pct_Income = Avg_Income/lag(Avg_Income) -1 ) %>%
+  mutate(Pct_Rent = Avg_Rent/lag(Avg_Rent) -1 ) %>%
+  ungroup %>%
+  select(Row, Year, Sub_Borough, Gentrified, Avg_Age, Pct_Income, Pct_Rent)
+```
+
+
 ```{r Models}
-#Rent only
-model1 <- glm(Gentrified ~ Avg_Rent, data = avg_NY, family = "binomial")
+#% change in Rent only
+model1 <- glm(Gentrified ~ Pct_Rent, data = pct_NY, family = "binomial")
 summary(model1)
 ```
+
 ```{r}
-#Income only
-model2 <- glm(Gentrified ~ Avg_Income, data = avg_NY, family = "binomial")
+#% change in Income only
+model2 <- glm(Gentrified ~ Pct_Income, data = pct_NY, family = "binomial")
 summary(model2)
 ```
+
 ```{r}
-#Rent & Income
-model3 <- glm(Gentrified ~ Avg_Rent + Avg_Income, data = avg_NY, family = "binomial")
+#% change in Rent & Income
+model3 <- glm(Gentrified ~ Pct_Income + Pct_Rent , data = pct_NY, family = "binomial")
 summary(model3)
-```
-```{r}
-#Rent, Income & Interaction
-model4 <- glm(Gentrified ~ Avg_Rent + Avg_Income + Avg_Rent*Avg_Income, data = avg_NY, family = "binomial")
-summary(model4)
-```
-```{r}
-model5 <- glm(Gentrified ~ factor(Borough) +  Avg_Rent + Avg_Income + Avg_Rent*Avg_Income + Avg_NPR, data = avg_NY, family = "binomial")
-summary(model5)
 ```
 
