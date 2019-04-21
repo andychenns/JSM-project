@@ -547,6 +547,7 @@ ggplot(DF[DF$`_1b` != 8,])+
   scale_fill_manual("Householder's Gender", values = getpalette(9), labels = c("1" = "Male",
                                                                                "2" = "Female", "8" = "Not Coded"))+
   labs(title = "Male vs Female Householders by Borough", x = "Borough", y = "Proportion")
+ggsave("Gender_Borough.png")
 
 #By Sub-borough
 ggplot(DF[DF$`_1b` != 8,])+
@@ -556,6 +557,7 @@ ggplot(DF[DF$`_1b` != 8,])+
                                                                                "2" = "Female"))+
   labs(title = "Male vs Female Householders by Sub-Borough", x = "Sub-Borough", y = "Proportion")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+ggsave("Gender_Sub.png")
 
 ```
 
@@ -563,22 +565,26 @@ ggplot(DF[DF$`_1b` != 8,])+
 
 ```{r}
 # 1st gen and 2nd gen immigrants over the years
-
 ggplot(DF[DF$Gen != 0,])+
-  aes(x = Year)+
-  geom_bar(aes(fill = factor(Gen)), position = "fill")+
-  labs(title = "1st and 2nd Gen Immigrants over the Years", y = "Proportion")+
-  scale_fill_brewer(name = "Generation", palette = "Accent")
+                    aes(x = Year)+
+                    geom_bar(aes(fill = factor(Gen)), position = "fill")+
+                    labs(title = "1st and 2nd Gen Immigrants over the Years", y = "Proportion")+
+                    scale_fill_brewer(name = "Generation", palette = "Accent")
+ggsave("Gen1_Gen2.png")
+
+
 
 # 1st and 2nd gen immigrants by sub-borough
 ggplot(DF[DF$Gen != 0,])+
   aes(x = sba)+
   geom_bar(aes(fill = factor(Gen)), position = "fill")+
-  labs(title = "1st and 2nd Gen Immigrants by Sub-Borough", y = "Proportion")+
+  labs(title = "1st and 2nd Gen Immigrants by Sub-Borough", y = "Proportion", x = "Sub-Borough")+
   scale_fill_brewer(name = "Generation", palette = "Accent")+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+ggsave("Sub_Gen12.png")
 ```
+
 
 
 ```{r}
@@ -595,6 +601,7 @@ ggplot(DF[DF$Gen == 1 & DF$Birth != 98,])+
                     "17" = "China, Hongkong, Taiwan", "18" = "Korea", "19" = "India, Pakistan, Bangladesh",
                     "20" = "Philippines", "21" = "Southeast Asia", "22" = "Other Asia", "23" = "Africa",
                     "24" = "All other countries", "98" = "Not Reported"))
+ggsave("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Code/Gen1_birth.png")
 
 #Puerto Rico - decrease in proportion over the years
 
@@ -610,6 +617,7 @@ ggplot(DF[DF$Gen == 2 & DF$FatherB != 98,])+
                     "17" = "China, Hongkong, Taiwan", "18" = "Korea", "19" = "India, Pakistan, Bangladesh",
                     "20" = "Philippines", "21" = "Southeast Asia", "22" = "Other Asia", "23" = "Africa",
                     "24" = "All other countries", "98" = "Not Reported", "10" = "US"))
+ggsave("Gen2_Dad.png")
 
 #mother's place of birth
 
@@ -622,7 +630,7 @@ ggplot(DF[DF$Gen == 2 & DF$MotherB != 98,])+
                     "17" = "China, Hongkong, Taiwan", "18" = "Korea", "19" = "India, Pakistan, Bangladesh",
                     "20" = "Philippines", "21" = "Southeast Asia", "22" = "Other Asia", "23" = "Africa",
                     "24" = "All other countries", "98" = "Not Reported", "10" = "US" ))
-
+ggsave("Gen2_Mom.png")
 ```
 
 
@@ -646,6 +654,7 @@ ggplot(DF[DF$Gen == 1,])+
                                                                                 "8" = "Not Reported"))+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+ggsave("Gen1_building.png")
 
 #Condition of building for 2nd gen by sub-borough
 ggplot(DF[DF$Gen == 2,])+
@@ -659,6 +668,7 @@ ggplot(DF[DF$Gen == 2,])+
                                                                                 "8" = "Not Reported"))+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+ggsave("Gen2_building.png")
 
 #Condition of building for US Natives
 ggplot(DF[DF$Gen == 0,])+
@@ -680,7 +690,7 @@ ggplot(DF[DF$Gen == 0,])+
 
 ```{r}
 #Presence of mice and rats - 1st gen
-
+library(RColorBrewer)
 getpalette2 <- colorRampPalette(brewer.pal(8, "Accent"))
 
 ggplot(DF[DF$Gen == 1,])+
@@ -693,6 +703,7 @@ ggplot(DF[DF$Gen == 1,])+
                                                                                 "8" = "Not Reported"))+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+ggsave("Gen1_Mice.png")
 
 #Presence of Mice and Rats - 2nd Gen
 ggplot(DF[DF$Gen == 2,])+
@@ -705,6 +716,7 @@ ggplot(DF[DF$Gen == 2,])+
                                                                                 "8" = "Not Reported"))+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7))
+ggsave("Gen2_Mice.png")
 
 #Presence of Mice and Rats - Natives
 ggplot(DF[DF$Gen == 0,])+
@@ -734,7 +746,7 @@ DF$Bor[DF$borough == 5] <- "Staten Island"
 ggplot(DF[DF$Gen == 1,])+
   aes(x = factor(as.numeric(hcr)))+
   geom_bar(aes(fill = factor(as.numeric(hcr))))+
-  labs(title = "Household Composition in Bronx", x = "Composition Code")+
+  labs(title = "Household Composition by Borough- 1st Gen", x = "Composition Code")+
   facet_wrap(Bor ~.)+
   scale_fill_discrete(labels = c("1" = "1 - Married Couple\nWith no other household members",
                                                 "2" = "2 - Married Couple\nWith children under 18 only",
@@ -755,6 +767,7 @@ ggplot(DF[DF$Gen == 1,])+
   guides(fill = guide_legend(ncol = 4, nrow = 5))+
   theme(legend.position = "bottom", legend.text = element_text(size = 7), legend.title = element_blank(),
         axis.text.x = element_text(size = 7))
+ggsave("Gen1_hcr.png")
 
 #Female householder with no other household members - high number in Manhattan - no family could be a sign of susceptibility to gentrification
 
@@ -763,7 +776,7 @@ ggplot(DF[DF$Gen == 1,])+
 ggplot(DF[DF$Gen == 2,])+
   aes(x = factor(as.numeric(hcr)))+
   geom_bar(aes(fill = factor(as.numeric(hcr))))+
-  labs(title = "Household Composition in Bronx", x = "Composition Code")+
+  labs(title = "Household Composition by Borough - 2nd Gen", x = "Composition Code")+
   facet_wrap(Bor ~.)+
   scale_fill_discrete(labels = c("1" = "1 - Married Couple\nWith no other household members",
                                                 "2" = "2 - Married Couple\nWith children under 18 only",
@@ -784,6 +797,7 @@ ggplot(DF[DF$Gen == 2,])+
   guides(fill = guide_legend(ncol = 4, nrow = 5))+
   theme(legend.position = "bottom", legend.text = element_text(size = 7), legend.title = element_blank(),
         axis.text.x = element_text(size = 7))
+ggsave("Gen2_hcr.png")
 ```
 
 
@@ -809,6 +823,7 @@ ggplot(DF[DF$Gen == 0 & as.numeric(DF$hhinc) < 500000,])+
 
 
 
-
+```{r}
+```
 
 
