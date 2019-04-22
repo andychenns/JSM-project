@@ -81,7 +81,7 @@ pct_NY <- mutate(avg_NY, Row = 1:n()) %>%
   mutate(Pct_Income = Avg_Income/lag(Avg_Income) -1 ) %>%
   mutate(Pct_Rent = Avg_Rent/lag(Avg_Rent) -1 ) %>%
   ungroup %>%
-  select(Row, Year, Sub_Borough, Gentrified, Avg_Age, Pct_Income, Pct_Rent) %>%
+  select(Row, Year, Sub_Borough, Gentrified, Avg_Age, Pct_Income, Pct_Rent, Rent_Inc) %>%
   na.omit(pct_NY)
 ```
 
@@ -100,7 +100,7 @@ summary(model2)
 
 ```{r}
 #% change in Rent & Income
-model3 <- glm(Gentrified ~ Pct_Income + Pct_Rent , data = pct_NY, family = "binomial")
+model3 <- glm(Gentrified ~ Pct_Income + Pct_Rent + Rent_Inc , data = pct_NY, family = "binomial")
 summary(model3)
 ```
 
