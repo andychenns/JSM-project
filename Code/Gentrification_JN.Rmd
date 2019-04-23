@@ -39,9 +39,13 @@ library(dplyr)
 # NY$X_1c <- gsub("[^0-9]", "", NY$X_1c)
 # NY$X_1c <-as.numeric(NY$X_1c)
 
-##save(NY, file = 'NY.Rda')
-
-##table(NY$X_24a)
+# NY$white <- 0
+# NY$white[NY$X_1f == 01] <- 1
+# NY$white[NY$X_1e != 1] <- 0
+# 
+# save(NY, file = 'NY.Rda')
+# 
+# table(NY$white, NY$X_1e)
 ```
 
 ```{r Aggregation}
