@@ -27,7 +27,8 @@ ui <- dashboardPage(
       menuItem("Housing Conditions",
         tabName = "housing", icon = icon("home", lib = "glyphicon"),
         menuSubItem("Introduction", tabName = "intro", icon = icon("comments", lib = "font-awesome")),
-        menuSubItem("Housing condition", tabName = "house", icon = icon("th"))),
+        menuSubItem("Housing condition", tabName = "house", icon = icon("th"))
+      ),
       menuItem("Gentrification",
         tabName = "gentrify", icon = icon("cog", lib = "glyphicon"),
         menuSubItem("Introduction", tabName = "gintro", icon = icon("comments", lib = "font-awesome")),
@@ -54,17 +55,25 @@ ui <- dashboardPage(
       tabItem(
         tabName = "house",
         h4("Housing condition"),
-        fluidRow(column(12, radioButtons(
-          inputId = "year", label = "Select Year",
-          choices = c(
-            "1991", "1993", "1996", "1999",
-            "2002", "2005", "2008", "2011",
-            "2014", "2017"
-          ), inline = TRUE, selected = "1991"
-        ))),
         fluidRow(
-          box(title = "First generation housing condition", leafletOutput("first_house_condition")),
-          box(title = "Second generation housing condition", leafletOutput("second_house_condition"))
+          column(width = 6, radioButtons(
+            inputId = "year", label = "Select Year",
+            choices = c(
+              "1991", "1993", "1996", "1999",
+              "2002", "2005", "2008", "2011",
+              "2014", "2017"
+            ), inline = TRUE, selected = "1991"
+          )),
+          column(width=3,
+            selectInput("statistics", "Statistics", 
+                        choices = c("Electricity & Gas", "Rent price","Windows(broken, boarded)"))),
+          column(width=3,
+            selectInput("birthplace", "Birthplace", choices = c("USA","Immigrant","China","Mexican","Indian"))
+          )
+        ),
+        fluidRow(
+          box(title = "First generation housing condition", "my_leaf"),
+          box(title = "Second generation housing condition", "Box content")
         )
       ),
       tabItem(
@@ -77,20 +86,19 @@ ui <- dashboardPage(
           radioButtons(
             inputId = "slider",
             label = "Years",
-            c("1991" ,"1993","1996","1999","2002","2005","2008","2011", "2014","2017"
-            ), inline = TRUE
+            c("1991", "1993", "1996", "1999", "2002", "2005", "2008", "2011", "2014", "2017"), inline = TRUE
           ),
           sidebarLayout(
             # Select the exact birthplace
             sidebarPanel(
               selectInput("birthplace", "Birthplace:",
-                          choices = unique(test[, "hh_birth"])
+                choices = unique(test[, "hh_birth"])
               ),
               selectInput("generation", "Generation:",
-                          choices = c(
-                            "First generation" = "per", "Second generation dad" = "per_dad",
-                            "Second generation mom" = "per_mom"
-                          )
+                choices = c(
+                  "First generation" = "per", "Second generation dad" = "per_dad",
+                  "Second generation mom" = "per_mom"
+                )
               )
             ),
             mainPanel(
@@ -105,16 +113,16 @@ ui <- dashboardPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-  
+
   ## create static plot
   output$my_leaf <- renderLeaflet({
     leaflet() %>%
       addProviderTiles(providers$Esri.NatGeoWorldMap) %>%
       setView(lat = 40.730610, lng = -73.935242, zoom = 10)
   })
-  
+
   a <- test[test$year == 1994, ]
-  
+
   ## filter data
   df_filtered <- reactive({
     test <- test %>% select(year, bor_subb, hh_birth, input$generation)
@@ -123,11 +131,11 @@ server <- function(input, output, session) {
     colnames(test)[4] <- "per"
     df <- merge(nycity, test, by = "bor_subb", duplicateGeoms = TRUE)
   })
-  
+
   ## respond to the filtered data
   observe({
     pal <- colorNumeric("viridis", NULL) # Deinfe color
-    
+
     leafletProxy(mapId = "my_leaf", data = df_filtered()) %>%
       addPolygons(
         fillColor = ~pal(per), smoothFactor = 0.5,
