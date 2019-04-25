@@ -55,8 +55,8 @@ avg_NY$Rent_Inc <- (avg_NY$Avg_Rent*12)/avg_NY$Avg_Income
 avg_NY$People_Room <- avg_NY$Avg_NPR/avg_NY$Avg_Rooms
 
 #Median
-med_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a", "X_1c")], by = list(NY$year,NY$borough, NY$sba), FUN = median, na.rm = TRUE)
-colnames(med_NY) <- c("Year", "Borough", "Sub_Borough","Med_NPR", "Med_Rent", "Med_Income", "Med_Rooms", "Med_Age")
+# med_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a", "X_1c")], by = list(NY$year,NY$borough, NY$sba), FUN = median, na.rm = TRUE)
+# colnames(med_NY) <- c("Year", "Borough", "Sub_Borough","Med_NPR", "Med_Rent", "Med_Income", "Med_Rooms", "Med_Age")
 
 ##save(avg_NY, file = 'avg_NY.Rda')
 ##save(pct_NY, file = 'pct_NY.Rda')
