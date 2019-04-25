@@ -49,7 +49,7 @@ library(dplyr)
 # NY$gen2 <- 0
 # NY$gen2[NY$gen=="2"] <- 1
 
-#save(NY, file = 'NY.Rda')
+##save(NY, file = 'NY.Rda')
 ##table(NY$gen)
 ```
 
