@@ -44,13 +44,20 @@ library(dplyr)
 # NY$white[NY$year %in% c(2002, 2005, 2008, 2011, 2014) & substr(NY$X_1f, 1, 2) == 10] <- 1
 # NY$white[NY$X_1e != 1] <- 0
 
+# NY$gen1 <- 0
+# NY$gen1[NY$gen=="1"] <- 1
+# NY$gen2 <- 0
+# NY$gen2[NY$gen=="2"] <- 1
+
 #save(NY, file = 'NY.Rda')
+##table(NY$gen)
 ```
 
 ```{r Aggregation}
 #Mean
-avg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a", "X_1c", "white")], by = list(NY$year,NY$borough, NY$sba), FUN = mean, na.rm = TRUE)
-colnames(avg_NY) <- c("Year", "Borough", "Sub_Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms", "Avg_Age", "Pct_White")
+avg_NY <- aggregate(NY[,c("npr", "mgrent", "hhinc", "X_24a", "X_1c", "white", "gen1", "gen2")], by = list(NY$year,NY$borough, NY$sba), FUN = mean, na.rm = TRUE)
+colnames(avg_NY) <- c("Year", "Borough", "Sub_Borough","Avg_NPR", "Avg_Rent", "Avg_Income", "Avg_Rooms", "Avg_Age", "Pct_White", "Pct_Gen1", "Pct_Gen2")
+avg_NY$Pct_Gen12 <- avg_NY$Pct_Gen1 + avg_NY$Pct_Gen2
 avg_NY$Rent_Inc <- (avg_NY$Avg_Rent*12)/avg_NY$Avg_Income
 avg_NY$People_Room <- avg_NY$Avg_NPR/avg_NY$Avg_Rooms
 
@@ -61,15 +68,6 @@ avg_NY$People_Room <- avg_NY$Avg_NPR/avg_NY$Avg_Rooms
 ##save(avg_NY, file = 'avg_NY.Rda')
 ##save(pct_NY, file = 'pct_NY.Rda')
 ##save(med_NY, file = 'med_NY.Rda')
-```
-
-```{r Plots}
-# ggplot(data = subset(agg_NY, agg_NY$Sub_Borough %in% c("301")), aes(x = Year, y = Avg_Income), group = 1) +
-#   geom_point()
-```
-```{r}
-# ggplot(data = subset(agg_NY, agg_NY$Borough %in% c("1")), aes(x = Year, y = Avg_Income), group = 1) +
-#   geom_point()
 ```
 
 ```{r Gentrified Sub-Boroughs}
@@ -85,8 +83,11 @@ pct_NY <- mutate(avg_NY, Row = 1:n()) %>%
   mutate(Pct_Chg_Income = Avg_Income/lag(Avg_Income) -1 ) %>%
   mutate(Pct_Chg_Rent = Avg_Rent/lag(Avg_Rent) -1 ) %>%
   mutate(Pct_Chg_White = Pct_White/lag(Pct_White) -1 ) %>%
+  mutate(Pct_Chg_Gen1 = Pct_Gen1/lag(Pct_Gen1) -1 ) %>%
+  mutate(Pct_Chg_Gen2 = Pct_Gen2/lag(Pct_Gen2) -1 ) %>%
+  mutate(Pct_Chg_Gen12 = Pct_Gen12/lag(Pct_Gen12) -1 ) %>%
   ungroup %>%
-  select(Row, Year, Sub_Borough, Gentrified, Avg_Age, Pct_Chg_Income, Pct_Chg_Rent, Rent_Inc, Pct_White, Pct_Chg_White) %>%
+  select(Row, Year, Sub_Borough, Gentrified, Avg_Age, Pct_Chg_Income, Pct_Chg_Rent, Rent_Inc, Pct_White, Pct_Chg_White, Pct_Gen1, Pct_Gen2, Pct_Gen12, Pct_Chg_Gen1, Pct_Chg_Gen2, Pct_Chg_Gen12) %>%
   na.omit(pct_NY)
 pct_NY$Pct_Chg_White <- replace(pct_NY$Pct_Chg_White, pct_NY$Pct_Chg_White==Inf, 0)
 ```
@@ -98,12 +99,20 @@ summary(model_1)
 ```
 
 ```{r Model 2}
-#% change in Rent, % change in Income, % White, Avg Age
+#% change in Rent, % change in Income, % change White, Avg Age
 model_2 <- glm(Gentrified ~ Pct_Chg_Income + Pct_Chg_Rent + Pct_Chg_Income*Pct_Chg_Rent + Pct_Chg_White + Avg_Age, data = pct_NY, family = "binomial")
 summary(model_2)
 ```
 
-```{r}
-##table(pct_NY$Pct_Chg_White)
+```{r Model 3}
+#% change in Rent, % change in Income, % change White, Avg Age, % change Gen1 Immigrant
+model_3 <- glm(Gentrified ~ Pct_Chg_Income + Pct_Chg_Rent + Pct_Chg_Income*Pct_Chg_Rent + Pct_Chg_White + Avg_Age + Pct_Chg_Gen1, data = pct_NY, family = "binomial")
+summary(model_3)
+```
+
+```{r Model 4}
+#% change in Rent, % change in Income, % change White, Avg Age, % change Gen1 & Gen2 Immigrant
+model_4 <- glm(Gentrified ~ Pct_Chg_Income + Pct_Chg_Rent + Pct_Chg_Income*Pct_Chg_Rent + Pct_Chg_White + Avg_Age + Pct_Chg_Gen12, data = pct_NY, family = "binomial")
+summary(model_4)
 ```
 
