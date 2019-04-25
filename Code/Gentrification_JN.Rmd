@@ -86,7 +86,6 @@ pct_NY <- mutate(avg_NY, Row = 1:n()) %>%
   mutate(Pct_Chg_Rent = Avg_Rent/lag(Avg_Rent) -1 ) %>%
   mutate(Pct_Chg_White = Pct_White/lag(Pct_White) -1 ) %>%
   ungroup %>%
-
   select(Row, Year, Sub_Borough, Gentrified, Avg_Age, Pct_Chg_Income, Pct_Chg_Rent, Rent_Inc, Pct_White, Pct_Chg_White) %>%
   na.omit(pct_NY)
 ```
@@ -94,28 +93,5 @@ pct_NY <- mutate(avg_NY, Row = 1:n()) %>%
 ```{r Final Model}
 #% change in Rent, Income, % White, Avg Age
 model <- glm(Gentrified ~ Pct_Chg_Income + Pct_Chg_Rent + Pct_Chg_Income*Pct_Chg_Rent + Pct_White + Avg_Age, data = pct_NY, family = "binomial")
-
-  select(Row, Year, Sub_Borough, Gentrified, Avg_Age, Pct_Income, Pct_Rent, Rent_Inc, Pct_White) %>%
-  na.omit(pct_NY)
-```
-
-
-```{r Model 1}
-#% change in Rent only
-model1 <- glm(Gentrified ~ Pct_Rent, data = pct_NY, family = "binomial")
-summary(model1)
-```
-
-```{r Model 2}
-#% change in Income only
-model2 <- glm(Gentrified ~ Pct_Income, data = pct_NY, family = "binomial")
-summary(model2)
-```
-
-```{r Final Model}
-#% change in Rent, Income, % White, Avg Age
-model <- glm(Gentrified ~ Pct_Income + Pct_Rent + Pct_White + Avg_Age, data = pct_NY, family = "binomial")
-
-summary(model)
 ```
 
