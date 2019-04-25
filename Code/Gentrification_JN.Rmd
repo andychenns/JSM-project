@@ -134,3 +134,12 @@ ggplot(data = avg_NY, aes(x = Year, y = Avg_Rent, group = Borough, color = Borou
   labs(title = "Average Rent by Sub-Borough and Year", x = "Year", y = "Average Rent")
 ```
 
+```{r %White Plot}
+ggplot(data = avg_NY[avg_NY$Gentrified==1,], aes(x = Year, y = Pct_White, group = Borough, color = Borough)) +
+  ##geom_line() +
+  geom_point()+
+  geom_jitter()+
+  scale_color_discrete(name = "Borough", labels = c("The Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"))+
+  labs(title = "% Non-Hispanic White by Sub-Borough and Year", x = "Year", y = "% Non-Hispanic White")
+```
+
