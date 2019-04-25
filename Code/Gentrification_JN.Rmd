@@ -116,3 +116,21 @@ model_4 <- glm(Gentrified ~ Pct_Chg_Income + Pct_Chg_Rent + Pct_Chg_Income*Pct_C
 summary(model_4)
 ```
 
+```{r Avg Income Plot}
+ggplot(data = avg_NY, aes(x = Year, y = Avg_Income, group = Borough, color = Borough)) +
+  ##geom_line() +
+  geom_point()+
+  geom_jitter()+
+  scale_color_discrete(name = "Borough", labels = c("The Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"))+
+  labs(title = "Average Income by Sub-Borough and Year", x = "Year", y = "Average Income")
+```
+
+```{r Average Rent Plot}
+ggplot(data = avg_NY, aes(x = Year, y = Avg_Rent, group = Borough, color = Borough)) +
+  ##geom_line() +
+  geom_point()+
+  geom_jitter()+
+  scale_color_discrete(name = "Borough", labels = c("The Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"))+
+  labs(title = "Average Rent by Sub-Borough and Year", x = "Year", y = "Average Rent")
+```
+
