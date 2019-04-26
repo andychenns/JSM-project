@@ -87,10 +87,29 @@ pct_NY <- mutate(avg_NY, Row = 1:n()) %>%
   mutate(Pct_Chg_Gen2 = Pct_Gen2/lag(Pct_Gen2) -1 ) %>%
   mutate(Pct_Chg_Gen12 = Pct_Gen12/lag(Pct_Gen12) -1 ) %>%
   ungroup %>%
-  select(Year, Sub_Borough, Gentrified, Avg_Age, Pct_Chg_Income, Pct_Chg_Rent, Rent_Inc, Pct_White, Pct_Chg_White, Pct_Gen1, Pct_Gen2, Pct_Gen12, Pct_Chg_Gen1, Pct_Chg_Gen2, Pct_Chg_Gen12) %>%
+  select(Year, Sub_Borough, Gentrified, Avg_Age, Pct_Chg_Income, Pct_Chg_Rent, Rent_Inc, Pct_White, Pct_Chg_White, Pct_Gen1, Pct_Gen2, Pct_Gen12, Pct_Chg_Gen1, Pct_Chg_Gen2, Pct_Chg_Gen12, Avg_Rent, Avg_Income, Avg_Rooms, Avg_NPR) %>%
   na.omit(pct_NY)
 pct_NY$Pct_Chg_White <- replace(pct_NY$Pct_Chg_White, pct_NY$Pct_Chg_White==Inf, 0)
 ```
+
+```{r 26 year diff}
+diff_91_17 <- avg_NY[avg_NY$Year %in% c(1991, 2017),]
+diff_26 <- mutate(diff_91_17, Row = 1:n()) %>%
+  group_by(Sub_Borough) %>%
+  mutate(Pct_Chg_Income = Avg_Income/lag(Avg_Income) -1 ) %>%
+  mutate(Pct_Chg_Rent = Avg_Rent/lag(Avg_Rent) -1 ) %>%
+  mutate(Pct_Chg_White = Pct_White/lag(Pct_White) -1 ) %>%
+  mutate(Pct_Chg_Gen1 = Pct_Gen1/lag(Pct_Gen1) -1 ) %>%
+  mutate(Pct_Chg_Gen2 = Pct_Gen2/lag(Pct_Gen2) -1 ) %>%
+  mutate(Pct_Chg_Gen12 = Pct_Gen12/lag(Pct_Gen12) -1 ) %>%
+  ungroup %>%
+  select(Year, Sub_Borough, Gentrified, Avg_Age, Pct_Chg_Income, Pct_Chg_Rent, Rent_Inc, Pct_White, Pct_Chg_White, Pct_Gen1, Pct_Gen2, Pct_Gen12, Pct_Chg_Gen1, Pct_Chg_Gen2, Pct_Chg_Gen12, Avg_Rent, Avg_Income, Avg_Rooms, Avg_NPR) %>%
+  na.omit(pct_NY)
+diff_26$Year <- 26
+pct_NY <- rbind(pct_NY, diff_26)
+```
+
+
 
 ```{r Model 1}
 #% change in Rent, % change in Income, % White, Avg Age
