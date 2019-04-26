@@ -87,7 +87,7 @@ pct_NY <- mutate(avg_NY, Row = 1:n()) %>%
   mutate(Pct_Chg_Gen2 = Pct_Gen2/lag(Pct_Gen2) -1 ) %>%
   mutate(Pct_Chg_Gen12 = Pct_Gen12/lag(Pct_Gen12) -1 ) %>%
   ungroup %>%
-  select(Row, Year, Sub_Borough, Gentrified, Avg_Age, Pct_Chg_Income, Pct_Chg_Rent, Rent_Inc, Pct_White, Pct_Chg_White, Pct_Gen1, Pct_Gen2, Pct_Gen12, Pct_Chg_Gen1, Pct_Chg_Gen2, Pct_Chg_Gen12) %>%
+  select(Year, Sub_Borough, Gentrified, Avg_Age, Pct_Chg_Income, Pct_Chg_Rent, Rent_Inc, Pct_White, Pct_Chg_White, Pct_Gen1, Pct_Gen2, Pct_Gen12, Pct_Chg_Gen1, Pct_Chg_Gen2, Pct_Chg_Gen12) %>%
   na.omit(pct_NY)
 pct_NY$Pct_Chg_White <- replace(pct_NY$Pct_Chg_White, pct_NY$Pct_Chg_White==Inf, 0)
 ```
