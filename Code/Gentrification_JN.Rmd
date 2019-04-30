@@ -9,6 +9,7 @@ output: pdf_document
 ##load("~/JSM/Data/NY.Rda")
 library(ggplot2)
 library(dplyr)
+library(arm)
 ```
 
 ```{r Cleaning}
@@ -122,6 +123,11 @@ summary(model_1)
 model_2 <- glm(Gentrified ~ Pct_Chg_Income + Pct_Chg_Rent + Pct_Chg_Income*Pct_Chg_Rent + Pct_Chg_White + Avg_Age, data = pct_NY, family = "binomial")
 summary(model_2)
 ```
+
+```{r}
+binnedplot(fitted(model_2), residuals(model_2, type = "response"))
+```
+
 
 ```{r Model 3}
 #% change in Rent, % change in Income, % change White, Avg Age, % change Gen1 Immigrant
