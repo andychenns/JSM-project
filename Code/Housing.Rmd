@@ -1,0 +1,324 @@
+---
+title: "Untitled"
+author: "Doug Goon"
+date: "April 29, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("tidyverse")
+library("dplyr")
+library("ggplot2")
+library(stringr)
+library(reshape2)
+
+
+NY <- read.csv("NY.csv")
+```
+
+#Window Conditions
+```{r}
+#CREATE SUBSET REMOVING NA IN X_e4
+#Convert X_h column from fact
+NY$X_e4 <- as.numeric(as.character(NY$X_e4))
+#Remove values equal to 8 (8= NOT REPORTED)
+subset_windows<-NY[NY$X_e4!=8, ]
+
+
+df3 <- subset_windows %>% 
+ count(year, gen, sba, X_e4) %>% 
+ group_by(year, gen, sba) %>% 
+ transmute(X_e4, Percentage=n/sum(n)*100)
+mean_windows<-df3[df3$X_e4!=9, ]
+mean_windows$Per_Poor_Window <- with(mean_windows, 100 - Percentage)
+colnames(mean_windows)[1] <- "year"
+colnames(mean_windows)[2] <- "generation"
+colnames(mean_windows)[3] <- "sba"
+mean_windows$X_e4 <- NULL
+mean_windows$Percentage <- NULL
+mean_windows<-mean_windows[mean_windows$generation!=0, ]
+
+#Count number of observations per year and sba
+#library(plyr)
+#counts_windows <- ddply(subset_windows, .(subset_windows$X_e4, subset_windows$year, subset_windows$sba), nrow)
+#names(counts_windows) <- c("X_e4", "year", "sba", "Freq")
+
+
+#SBA 101 
+sba_101 <- mean_windows %>% filter((`sba` == 101)) #need bar plot
+
+ggplot(sba_101, aes(x = factor(year), y = Per_Poor_Window, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Poor Window Conditions", subtitle = "SBA 101", x = "Year", y = "Percentage Poor Window Conditions") + scale_fill_discrete(name = "Generation") 
+
+df4 <- subset_windows %>% 
+ count(year, gen, borough, X_e4) %>% 
+ group_by(year, gen, borough) %>% 
+ transmute(X_e4, Percentage=n/sum(n)*100)
+mean_windowsbor<-df4[df4$X_e4!=9, ]
+mean_windowsbor$Per_Poor_Window <- with(mean_windowsbor, 100 - Percentage)
+colnames(mean_windowsbor)[1] <- "year"
+colnames(mean_windowsbor)[2] <- "generation"
+colnames(mean_windowsbor)[3] <- "borough"
+mean_windowsbor$X_e4 <- NULL
+mean_windowsbor$Percentage <- NULL
+mean_windowsbor<-mean_windowsbor[mean_windowsbor$generation!=0, ]
+
+#Count number of observations per year and sba
+#library(plyr)
+#counts_windowsbor <- ddply(subset_windowsbor, .(subset_windowsbor$X_e4, subset_windowsbor$year, subset_windowsbor$sba), nrow)
+#names(counts_windowsbor) <- c("X_e4", "year", "sba", "Freq")
+
+
+ggplot(mean_windowsbor, aes(x = factor(year), y = Per_Poor_Window, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Poor Window Conditions", subtitle = "New York City", x = "Year", y = "Percentage Poor Window Conditions") + scale_fill_discrete(name = "Generation") 
+```
+
+#Housing Conditions
+```{r}
+#CREATE SUBSET REMOVING NA IN X_h
+#Convert X_h column from fact
+NY$X_h <- as.numeric(as.character(NY$X_h))
+#Remove values equal to 8 (8= NOT REPORTED)
+subset_buildingcondition<-NY[NY$X_h!=8, ]
+#Convert 3 (Deteriorate) to 1
+subset_buildingcondition$X_h[subset_buildingcondition$X_h == "3"] <- "1"
+#Building Condition - Percentage within generation
+df2 <- subset_buildingcondition %>% 
+ count(year, gen, sba, X_h) %>% 
+ group_by(year, gen, sba) %>% 
+ transmute(X_h, Percentage=n/sum(n)*100)
+mean_buildingcondition<-df2[df2$X_h!=1, ]
+mean_buildingcondition$Per_Deteriorate <- with(mean_buildingcondition, 100 - Percentage)
+colnames(mean_buildingcondition)[1] <- "year"
+colnames(mean_buildingcondition)[2] <- "generation"
+colnames(mean_buildingcondition)[3] <- "sba"
+mean_buildingcondition$X_h <- NULL
+mean_buildingcondition$Percentage <- NULL
+mean_buildingcondition<-mean_buildingcondition[mean_buildingcondition$generation!=0, ]
+
+ggplot(mean_buildingcondition, aes(x = factor(year), y = Per_Deteriorate, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Poor Building Conditions", subtitle = "New York City", x = "Year", y = "Percentage Poor Window Conditions") + scale_fill_discrete(name = "Generation") 
+
+#SBA 101 
+sba_101_housing <- mean_buildingcondition %>% filter((`sba` == 101)) #need bar plot
+
+ggplot(sba_101_housing, aes(x = factor(year), y = Per_Deteriorate, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Poor Building Conditions", subtitle = "SBA 101", x = "Year", y = "Percentage Poor Building Conditions") + scale_fill_discrete(name = "Generation") 
+
+```
+
+#Wall Conditions
+```{r}
+#CREATE SUBSET REMOVING NA IN X_d5
+#Convert X_d5 column from fact
+NY$X_d5 <- as.numeric(as.character(NY$X_d5))
+#Remove values equal to 8 (8= NOT REPORTED)
+subset_walls<-NY[NY$X_d5!=8, ]
+
+
+df5 <- subset_walls %>% 
+ count(year, gen, sba, X_d5) %>% 
+ group_by(year, gen, sba) %>% 
+ transmute(X_d5, Percentage=n/sum(n)*100)
+mean_walls<-df5[df5$X_d5!=9, ]
+mean_walls$Per_Poor_Wall <- with(mean_walls, 100 - Percentage)
+colnames(mean_walls)[1] <- "year"
+colnames(mean_walls)[2] <- "generation"
+colnames(mean_walls)[3] <- "sba"
+mean_walls$X_d5 <- NULL
+mean_walls$Percentage <- NULL
+mean_walls<-mean_walls[mean_walls$generation!=0, ]
+
+#Count number of observations per year and sba
+#library(plyr)
+#counts_windows <- ddply(subset_windows, .(subset_windows$X_e4, subset_windows$year, subset_windows$sba), nrow)
+#names(counts_windows) <- c("X_e4", "year", "sba", "Freq")
+
+
+#SBA 101 
+sba_101_walls <- mean_walls %>% filter((`sba` == 101)) #need bar plot
+
+ggplot(sba_101_walls, aes(x = factor(year), y = Per_Poor_Wall, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Poor Wall Conditions", subtitle = "SBA 101", x = "Year", y = "Percentage Poor Wall Conditions") + scale_fill_discrete(name = "Generation") 
+
+df6 <- subset_walls %>% 
+ count(year, gen, borough, X_d5) %>% 
+ group_by(year, gen, borough) %>% 
+ transmute(X_d5, Percentage=n/sum(n)*100)
+mean_wallsbor<-df6[df6$X_d5!=9, ]
+mean_wallsbor$Per_Poor_Wall <- with(mean_wallsbor, 100 - Percentage)
+colnames(mean_wallsbor)[1] <- "year"
+colnames(mean_wallsbor)[2] <- "generation"
+colnames(mean_wallsbor)[3] <- "borough"
+mean_wallsbor$X_d5 <- NULL
+mean_wallsbor$Percentage <- NULL
+mean_wallsbor<-mean_wallsbor[mean_wallsbor$generation!=0, ]
+
+#Count number of observations per year and sba
+#library(plyr)
+#counts_windowsbor <- ddply(subset_windowsbor, .(subset_windowsbor$X_e4, subset_windowsbor$year, subset_windowsbor$sba), nrow)
+#names(counts_windowsbor) <- c("X_e4", "year", "sba", "Freq")
+
+
+ggplot(mean_wallsbor, aes(x = factor(year), y = Per_Poor_Wall, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Poor Wall Conditions", subtitle = "New York City", x = "Year", y = "Percentage Poor Wall Conditions") + scale_fill_discrete(name = "Generation") 
+```
+
+#Kitchen 
+```{r}
+#CREATE SUBSET REMOVING NA IN X_e4
+#Convert X_h column from fact
+NY$X_26c <- as.numeric(as.character(NY$X_26c))
+#Remove values equal to 8 (8= NOT REPORTED)
+subset_kitchen<-NY[NY$X_26c!=8, ]
+
+subset_kitchen$X_26c[subset_kitchen$X_26c == "9"] <- "2"
+
+
+df9 <- subset_kitchen %>% 
+ count(year, gen, sba, X_26c) %>% 
+ group_by(year, gen, sba) %>% 
+ transmute(X_26c, Percentage=n/sum(n)*100)
+mean_kitchen<-df9[df9$X_26c!=2, ]
+mean_kitchen$Per_Poor_Kitchen <- with(mean_kitchen, 100 - Percentage)
+colnames(mean_kitchen)[1] <- "year"
+colnames(mean_kitchen)[2] <- "generation"
+colnames(mean_kitchen)[3] <- "sba"
+mean_kitchen$X_26c <- NULL
+mean_kitchen$Percentage <- NULL
+mean_kitchen<-mean_kitchen[mean_kitchen$generation!=0, ]
+
+#Count number of observations per year and sba
+#library(plyr)
+#counts_windows <- ddply(subset_windows, .(subset_windows$X_e4, subset_windows$year, subset_windows$sba), nrow)
+#names(counts_windows) <- c("X_e4", "year", "sba", "Freq")
+
+
+#SBA 101 
+sba_101_kitchen <- mean_kitchen %>% filter((`sba` == 101)) #need bar plot
+
+ggplot(sba_101_kitchen, aes(x = factor(year), y = Per_Poor_Kitchen, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison No Functioning Kitchen in Unit", subtitle = "SBA 101", x = "Year", y = "Percentage No Functioning Kitchen in Unit") + scale_fill_discrete(name = "Generation") 
+
+df10 <- subset_kitchen %>% 
+ count(year, gen, borough, X_26c) %>% 
+ group_by(year, gen, borough) %>% 
+ transmute(X_26c, Percentage=n/sum(n)*100)
+mean_kitchenbor<-df10[df10$X_26c!=2, ]
+mean_kitchenbor$Per_Poor_Kitchen <- with(mean_kitchenbor, 100 - Percentage)
+colnames(mean_kitchenbor)[1] <- "year"
+colnames(mean_kitchenbor)[2] <- "generation"
+colnames(mean_kitchenbor)[3] <- "borough"
+mean_kitchenbor$X_26c <- NULL
+mean_kitchenbor$Percentage <- NULL
+mean_kitchenbor<-mean_kitchenbor[mean_kitchenbor$generation!=0, ]
+
+#Count number of observations per year and sba
+#library(plyr)
+#counts_windowsbor <- ddply(subset_windowsbor, .(subset_windowsbor$X_e4, subset_windowsbor$year, subset_windowsbor$sba), nrow)
+#names(counts_windowsbor) <- c("X_e4", "year", "sba", "Freq")
+
+
+ggplot(mean_kitchenbor, aes(x = factor(year), y = Per_Poor_Kitchen, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison No Functioning Kitchen in Unit", subtitle = "New York City", x = "Year", y = "Percentage No Functioning Kitchen in Unit") + scale_fill_discrete(name = "Generation") 
+```
+
+#Mice
+```{r}
+#CREATE SUBSET REMOVING NA IN X_e4
+#Convert X_h column from fact
+NY$X_35a <- as.numeric(as.character(NY$X_35a))
+#Remove values equal to 8 (8= NOT REPORTED)
+subset_mice<-NY[NY$X_35a!=8, ]
+
+
+
+
+df13 <- subset_mice %>% 
+ count(year, gen, sba, X_35a) %>% 
+ group_by(year, gen, sba) %>% 
+ transmute(X_35a, Percentage=n/sum(n)*100)
+mean_mice<-df13[df13$X_35a!=2, ]
+mean_mice$Per_Mice <- with(mean_mice, 100 - Percentage)
+colnames(mean_mice)[1] <- "year"
+colnames(mean_mice)[2] <- "generation"
+colnames(mean_mice)[3] <- "sba"
+mean_mice$X_35a <- NULL
+mean_mice$Percentage <- NULL
+mean_mice<-mean_mice[mean_mice$generation!=0, ]
+
+#Count number of observations per year and sba
+#library(plyr)
+#counts_windows <- ddply(subset_windows, .(subset_windows$X_e4, subset_windows$year, subset_windows$sba), nrow)
+#names(counts_windows) <- c("X_e4", "year", "sba", "Freq")
+
+
+#SBA 101 
+sba_101_mice <- mean_mice %>% filter((`sba` == 101)) #need bar plot
+
+ggplot(sba_101_mice, aes(x = factor(year), y = Per_Mice, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison Mice Presence", subtitle = "SBA 101", x = "Year", y = "Percentage Presence of Mice") + scale_fill_discrete(name = "Generation") 
+
+df14 <- subset_mice %>% 
+ count(year, gen, borough, X_35a) %>% 
+ group_by(year, gen, borough) %>% 
+ transmute(X_35a, Percentage=n/sum(n)*100)
+mean_micebor<-df14[df14$X_35a!=1, ]
+mean_micebor$Per_Mice <- with(mean_micebor, 100 - Percentage)
+colnames(mean_micebor)[1] <- "year"
+colnames(mean_micebor)[2] <- "generation"
+colnames(mean_micebor)[3] <- "borough"
+mean_micebor$X_35a <- NULL
+mean_micebor$Percentage <- NULL
+mean_micebor<-mean_micebor[mean_micebor$generation!=0, ]
+
+#Count number of observations per year and sba
+#library(plyr)
+#counts_windowsbor <- ddply(subset_windowsbor, .(subset_windowsbor$X_e4, subset_windowsbor$year, subset_windowsbor$sba), nrow)
+#names(counts_windowsbor) <- c("X_e4", "year", "sba", "Freq")
+
+
+ggplot(mean_micebor, aes(x = factor(year), y = Per_Mice, fill = factor(generation))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison Mice Presence", subtitle = "New York City", x = "Year", y = "Percentage Mice Presence") + scale_fill_discrete(name = "Generation") 
+```
+
+```{r}
+#Merge 
+Total <- merge(mean_windows, mean_buildingcondition, by=c("year","generation", "sba"))
+Total <- merge(Total, mean_walls, by=c("year","generation", "sba"))
+Total <- merge(Total, mean_kitchen, by=c("year","generation", "sba"))
+#Total <- merge(Total, mean_mice, by=c("year","generation", "sba"))
+```
+
+```{r}
+#Loop - doesn't graph still working
+sba_list <- unique(Total$sba)
+for (i in seq_along(sba_list)) { 
+    print(ggplot(Total, aes(x = factor(year), y = Per_Poor_Window, fill = factor(generation)))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Poor Window Conditions", x = "Year", y = "Percentage Poor Window Conditions") + scale_fill_discrete(name = "Generation")  
+}
+```
+
+```{r}
+#Loop - doesn't graph still working
+sba_list <- unique(Total$sba)
+for (i in c(101:110)) { 
+    print(ggplot(mean_windows, aes(x = factor(year), y = Per_Poor_Window, group = generation))) + 
+  geom_bar() 
+}
+```
