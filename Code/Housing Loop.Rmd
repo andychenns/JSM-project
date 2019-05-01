@@ -1,0 +1,85 @@
+---
+title: "Housing Loop"
+author: "Doug Goon"
+date: "April 30, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("tidyverse")
+library("dplyr")
+library("ggplot2")
+library(stringr)
+library(reshape2)
+```
+
+```{r}
+Total <- read.csv("Total.csv")
+mean_mice <- read.csv("mean_mice.csv")
+#Loop 
+sba_list <- unique(Total$sba)
+# A <- as.data.frame(Total$sba)
+# aa <- as.data.frame(A[1:55,])
+
+#loop for window conditions
+for (i in sba_list) { 
+  dataframe <- Total[Total$sba==i, ]
+  print(ggplot(dataframe, aes(x = factor(year), y = Per_Poor_Window, fill = factor(generation))) + 
+  geom_col(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Poor Window Conditions", x = "Year", y = "Percentage Poor Window Conditions") + scale_fill_discrete(name = "Generation")  +
+  theme())
+}
+```
+
+```{r}
+#loop for building conditions
+for (i in sba_list) { 
+  dataframe <- Total[Total$sba==i, ]
+  print(ggplot(dataframe, aes(x = factor(year), y = Per_Deteriorate, fill = factor(generation))) + 
+  geom_col(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Building Conditions", x = "Year", y = "Percentage Poor Building Conditions") + scale_fill_discrete(name = "Generation")  +
+  theme())
+}
+```
+
+```{r}
+#loop for wall conditions
+for (i in sba_list) { 
+  dataframe <- Total[Total$sba==i, ]
+  print(ggplot(dataframe, aes(x = factor(year), y = Per_Poor_Wall, fill = factor(generation))) + 
+  geom_col(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Wall Conditions", x = "Year", y = "Percentage Poor Wall Conditions") + scale_fill_discrete(name = "Generation")  +
+  theme())
+}
+```
+
+```{r}
+#loop for building conditions
+for (i in sba_list) { 
+  dataframe <- Total[Total$sba==i, ]
+  print(ggplot(dataframe, aes(x = factor(year), y = Per_Deteriorate, fill = factor(generation))) + 
+  geom_col(stat = "identity", position = "dodge") +
+  labs(title = "Comparison No Functioning Kitchen in Unit", x = "Year", y = "Percentage No Functioning Kitchen in Unit") + scale_fill_discrete(name = "Generation")  +
+  theme())
+}
+```
+
+```{r}
+#Loop 
+sba_listmice <- unique(mean_mice$sba)
+# A <- as.data.frame(Total$sba)
+# aa <- as.data.frame(A[1:55,])
+
+#loop for window conditions
+for (i in sba_listmice) { 
+  dataframemice <- mean_mice[mean_mice$sba==i, ]
+  print(ggplot(dataframemice, aes(x = factor(year), y = Per_Mice, fill = factor(generation))) + 
+  geom_col(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Mice Presence", x = "Year", y = "Percentage Mice Presence") + scale_fill_discrete(name = "Generation")  +
+  theme())
+}
+```
