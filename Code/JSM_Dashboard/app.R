@@ -17,6 +17,7 @@ library(mapview)
 library(magick)
 library(htmlwidgets)
 library(htmltools)
+library(plotly)
 
 #Loading the main data sets 
 ny_city <- geojsonio::geojson_read("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Map/nyc_sub_borough_area.geojson", what = "sp")
@@ -24,6 +25,12 @@ load("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/hcdata.
 load("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NYC_avg.Rda")
 load("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/ggdata.Rda")
 
+load("Longhao.Rdata")
+load("NY.Rda")
+nyc$subb_name <- as.character(nyc$subb_name)
+a<-unique(nyc$subb_name)
+nyc$Gentrified <- nyc$Gentrified + 1
+nyc[496:550,1]<-"1991-2017"
 
 # Define UI for application
 ui <- dashboardPage(skin = "green",
@@ -39,7 +46,7 @@ ui <- dashboardPage(skin = "green",
       ),
       menuItem("Gentrification", tabName = "gentrify", icon = icon("cog", lib = "glyphicon"),
                menuSubItem("Introduction", tabName = "gintro", icon = icon("comments", lib = "font-awesome")),
-               menuSubItem("Statistics", icon = icon("stats", lib = "glyphicon"), tabName = "gentri")
+               menuSubItem("Statistics", icon = icon("stats", lib = "glyphicon"), tabName = "gentrification")
       )
     )
     
@@ -87,10 +94,50 @@ ui <- dashboardPage(skin = "green",
                               choices = c("Select",101:110, 201:218, 301:310, 401:414, 501:503)),
                   textOutput("Borough2"), textOutput("SubBorough2"),plotlyOutput("eda2"))
             )
+    ),
+    tabItem(
+      tabName = "gentrification",
+      h4("Gentrification"),
+      fluidRow(
+        column(width = 6, radioButtons(
+          inputId = "slider", label = "Select Year",
+          choices = c(
+            "1993", "1996", "1999",
+            "2002", "2005", "2008", "2011",
+            "2014", "2017", "1991-2017"
+          ), inline = TRUE, selected = "1993"
+        )),
+        column(
+          width = 3,
+          selectInput("statistics_gentrification", "Statistics",
+                      choices = c(
+                        "Average age" = "Avg_Age", "Percentage change of income"
+                        = "Pct_Chg_Income",
+                        "Percentage change of rent" = "Pct_Chg_Rent",
+                        "Rent income ratio" = "Rent_Inc",
+                        "Percentage change of white people" = "Pct_Chg_White",
+                        "Gentrification" = "Gentrified", "Percent White"="Pct_White"
+                      ), selected = "Pct_Chg_Income"
+          )
+        ),
+        column(
+          width = 3,
+          selectInput("sub_borough", "Sub borough:",
+                      choices = a, selected = a[30]
+          )
+        )
+      ),
+      fluidRow(
+        box(title = "Map", leafletOutput("my_leaf")),
+        box(title = "Statistics", plotOutput("plot2"))
+      )
+    )
     )
   )
 )
-)
+# Picture
+Lopez <- "https://andrealizamablog.files.wordpress.com/2017/10/nyc.jpg"
+china <- "https://imgs.6sqft.com/wp-content/uploads/2015/02/21005101/On-Leong-Tong-Building.jpg"
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
