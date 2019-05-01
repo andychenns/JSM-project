@@ -29,6 +29,7 @@ library(htmltools)
 library(animation)
 library(png)
 library(webshot)
+library(plotly)
 ```
 
 
@@ -42,7 +43,7 @@ load("C:/Users/GP/Desktop/MEGHA/SemII/JSM-ASA Challenge/JSM-project/Data/NY.Rda"
 
 
 ```{r}
-colnames(NY)[6] <- paste0("brwd")
+colnames(NY)[6] <- paste0("bad")
 colnames(NY)[60] <- paste0("bor_subb")
 
 NY$subb_name <- as.numeric(as.character(NY$bor_subb))
@@ -107,7 +108,90 @@ NY$subb_name[NY$bor_subb == 501] <- "North Shore"
 NY$subb_name[NY$bor_subb == 502] <- "Mid-Island"
 NY$subb_name[NY$bor_subb == 503] <- "South Shore"
 
+NY$bor_name <- as.numeric(as.character(NY$borough))
+NY$bor_name[NY$borough == 1] <- "Bronx"
+NY$bor_name[NY$borough == 2] <- "Brooklyn"
+NY$bor_name[NY$borough == 3] <- "Manhattan"
+NY$bor_name[NY$borough == 4] <- "Queens"
+NY$bor_name[NY$borough == 5] <- "Staten Island"
 
+colnames(NY)[8] <- paste0("bad1")
+
+NY$Count <- rep(1,length(NY$borough))
+NY$poor_win <- ifelse(NY$bad == 1 & NY$bad1 == 1, 1, ifelse(NY$bad == 1 | NY$bad1 == 1, 1, 0))
+poor_windows <- NY %>%
+  filter(gen == 1 | gen == 2) %>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarise(po_win = sum(poor_win), totalwin = sum(Count))
+poor_windows$perc_poorwin <- round(100*poor_windows$po_win/poor_windows$totalwin, 2)
+
+colnames(NY)[19] <- paste0("bld")
+NY$building <- ifelse(NY$bld == 1 & NY$bld == 3, 1, ifelse(NY$bld == 1 | NY$bld == 3, 1, 0))
+bldg1 <- NY %>%
+  filter(gen == 1 | gen == 2) %>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarise(sum_bld = sum(building), totalbld = sum(Count))
+bldg1$perc_bld <- round(100*bldg1$sum_bld/bldg1$totalbld, 2)
+
+NY$rats <- ifelse(NY$X_35a == 1, 1, 0)
+rats <- NY %>%
+  filter(gen == 1 | gen == 2) %>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarise(sum_rats = sum(rats), totalrats = sum(Count))
+rats$perc_rats <- round(100*rats$sum_rats/rats$totalrats, 2)
+  
+NY$kitchen <- ifelse(NY$X_26c == 2 | NY$X_26c == 9, 1, 0)
+kitchen <- NY %>%
+  filter(gen == 1 | gen == 2) %>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarise(sum_kitchen = sum(kitchen), totalkit = sum(Count))
+kitchen$perc_kitchen <- round(100*kitchen$sum_kitchen/kitchen$totalkit, 2)
+
+hcdata <- full_join(poor_windows, bldg1)
+hcdata1 <- full_join(hcdata, rats)
+hcdata2 <- full_join(hcdata1, kitchen)
+
+save(hcdata2, file = "hcdata.Rda")
+
+NY$China_gen1 <- ifelse(NY$gen==1 & NY$hhbirth == 17,1,0)
+NY$Mexico_gen1 <- ifelse(NY$gen == 1 & NY$hhbirth == 14,1,0)
+NY$India_gen1 <- ifelse(NY$gen == 1 & NY$hhbirth == 19,1,0)
+
+NY$China_gen2 <- ifelse(NY$gen == 2 & NY$mombirth == 17 | NY$gen == 2 & NY$dadbirth == 17, 1,0)
+NY$Mexico_gen2 <- ifelse(NY$gen == 2 & NY$mombirth == 14 | NY$gen == 2 & NY$dadbirth == 14, 1,0)
+NY$India_gen2 <- ifelse(NY$gen == 2 & NY$mombirth == 19 | NY$gen == 2 & NY$dadbirth == 19, 1,0)
+
+
+avg_income <- NY %>%
+  group_by(bor_name, year, bor_subb, subb_name, gen) %>%
+  summarise(avg_inc = round(mean(hhinc),2), avg_rent = round(mean(mgrent),2), avg_npr = round(mean(npr),2), avg_room = round(mean(X_24a),2),
+            avg_age = round(mean(X_1c),2), gen1_China = sum(China_gen1), gen1_Mexico = sum(Mexico_gen1),
+            gen1_India = sum(India_gen1), gen2_China = sum(China_gen2), gen2_Mexico = sum(Mexico_gen2),
+            gen2_India = sum(India_gen2), npr = sum(npr), rooms = sum(X_24a)) %>%
+  mutate(avg_ppr = round(npr/rooms, 2), log_inc = log(avg_inc), log_rent = log(avg_rent))
+
+sub_pop <- NY %>%
+  group_by(bor_subb, year)%>%
+  summarise(ncount = sum(Count))
+
+nyc_avg <- full_join(avg_income, sub_pop)
+nyc_avg$China_1 <- round(100*nyc_avg$gen1_China/nyc_avg$ncount, 2)
+nyc_avg$Mexico_1 <- round(100*nyc_avg$gen1_Mexico/nyc_avg$ncount, 2)
+nyc_avg$India_1 <- round(100*nyc_avg$gen1_India/nyc_avg$ncount, 2)
+nyc_avg$China_2 <- round(100*nyc_avg$gen2_China/nyc_avg$ncount, 2)
+nyc_avg$Mexico_2 <- round(100*nyc_avg$gen2_Mexico/nyc_avg$ncount, 2)
+nyc_avg$India_2 <- round(100*nyc_avg$gen2_India/nyc_avg$ncount, 2)
+
+nyc_avg$nChina <- nyc_avg$gen1_China + nyc_avg$gen2_China
+nyc_avg$nMexico <- nyc_avg$gen1_Mexico + nyc_avg$gen2_Mexico
+nyc_avg$nIndia <- nyc_avg$gen1_India + nyc_avg$gen2_India
+nyc_avg$China <- nyc_avg$China_1 + nyc_avg$China_2
+nyc_avg$Mexico <- nyc_avg$Mexico_1 + nyc_avg$Mexico_2
+nyc_avg$India <- nyc_avg$India_1 + nyc_avg$India_2
+
+NYC <- nyc_avg[, -c(11:16, 23:28)]
+
+save(NYC, file = "NYC_avg.Rda")
 ```
 
 
@@ -115,111 +199,87 @@ NY$subb_name[NY$bor_subb == 503] <- "South Shore"
 
 
 ```{r}
-#Broken Windows - 1st Generation Immigrants
-broken_windows <- NY %>%
-  filter(gen == 1) %>%
-  group_by(bor_subb, year, brwd) %>%
-  summarise(total_brwd = n())
+#Bad Windows - 1st Generation Immigrants
 
-br_wind <- broken_windows %>%
-  mutate(sum_brwd = sum(total_brwd))
-br_wind$perc_brwd <- 100*br_wind$total_brwd/br_wind$sum_brwd
+#boarded_windows <- NY %>%
+  #filter(gen == 1 | gen == 2)%>%
+  #group_by(borough, bor_subb, subb_name, year, gen, bad1) %>%
+  #summarise(total_bowd = n())
 
-brwd_map <- merge(ny_city, br_wind, by = "bor_subb", duplicateGeoms = TRUE)
+#colnames(boarded_windows)[6] <- "bad"
+#bad_win <- full_join(broken_windows, boarded_windows, by = c("borough","bor_subb", "subb_name", "year", "gen", "bad"))
+#bad_win[is.na(bad_win)] <- 0
+
+#bad_win$total_bad <- bad_win$total_brwd + bad_win$total_bowd
+#bad_windows <- bad_win %>%
+  #mutate(sum_bad = sum(total_bad))
+#bad_windows$perc_badwin <- 100*bad_windows$total_bad/bad_windows$sum_bad
+
+
+badwin_map <- merge(ny_city, poor_windows, by = "bor_subb", duplicateGeoms = TRUE)
 
 col2 <- colorRamps::blue2red(12)
 
 
-risk.bins <- c(0,5,10,15,20,25,30,35,40,45,50,55,60)
+risk.bins <- c(0,5,10,15,20,25,30)
 risk.pal <- colorBin(col2, bins = risk.bins, na.color = "grey")
 
-for (i in c(1991, seq(1993, 2017, 3))) {
-    map <- leaflet(brwd_map[brwd_map$year == 1991 & brwd_map$brwd == 1,]) %>%
-  addTiles() %>% addPolygons(fillColor=~risk.pal(perc_brwd),smoothFactor = 0.5, color = "black", fillOpacity = 0.9,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
-      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", "Broken Windows: ", perc_brwd, "%"))%>%
-  addLegend("topleft", pal=risk.pal, values = ~risk.bins, opacity = 1.0, title = "% of Houses with <br> Broken Windows")
-    saveWidget(map, "temp.html", selfcontained = FALSE)
-    webshot("temp.html", file = sprintf('brwd_gen1_%02d.png', i), delay = 1, cliprect = NULL)
-  }
+map_badwin1 <- leaflet(badwin_map[badwin_map$year == 2008 & badwin_map$bad == 1 & badwin_map$gen == 1,]) %>%
+  addTiles() %>% addPolygons(fillColor=~risk.pal(perc_badwin),smoothFactor = 0.5, color = "black", fillOpacity = 0.9,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", "Broken/ Boarded Up Windows: ", perc_badwin, "%"))%>%
+  addLegend("topleft", pal=risk.pal, values = ~perc_badwin, opacity = 1.0, title = "% of Houses with <br> Broken/Boarded Up<br> Windows")%>%
+  setView(lat =  40.730610, lng = -73.935242, zoom = 10)
 
-png_files <- list.files(pattern = ".png")
-ani.options(convert = 'C:\\Program Files\\ImageMagick-6.9.1-Q16\\convert.exe')
-im.convert(files = png_files, output = "brwd_animation.gif")
+map_badwin2 <- leaflet(badwin_map[badwin_map$year == 2008 & badwin_map$bad == 1 & badwin_map$gen == 2,]) %>%
+  addTiles() %>% addPolygons(fillColor=~risk.pal(perc_badwin),smoothFactor = 0.5, color = "black", fillOpacity = 0.9,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", "Broken/ Boarded Up Windows: ", perc_badwin, "%"))%>%
+  addLegend("topleft", pal=risk.pal, values = ~perc_badwin, opacity = 1.0, title = "% of Houses with <br> Broken/Boarded Up<br> Windows")%>%
+  setView(lat =  40.730610, lng = -73.935242, zoom = 10)
+
+map_badwin1
+map_badwin2
 
 
-#Broken Windows - 2nd Generation Immigrants
-broken_windows2 <- NY %>%
-  filter(gen == 2) %>%
-  group_by(bor_subb, year, brwd) %>%
-  summarise(total_brwd = n())
+ggplot(bad_windows[bad_windows$gen == 1 & bad_windows$year == 1991,])+
+  aes(x = bor_subb)+
+  geom_bar(aes(fill = bad), position = "fill")+
+  labs(title = "1st Gen Immigrant Housing with Broken/Boarded Up Windows\n1991", x = "Sub Borough", y = "Proportion")+
+  scale_fill_manual("Broken/Boarded Up Windows", values = c("orangered", "orange", "darkgreen"), labels = c("1" = "Yes",
+                                                                                                   "8" = "Not Reported",
+                                                                                                   "9" = "No"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 8))
 
-br_wind2 <- broken_windows2 %>%
-  mutate(sum_brwd = sum(total_brwd))
-br_wind2$perc_brwd <- 100*br_wind2$total_brwd/br_wind2$sum_brwd
 
-brwd_map2 <- merge(ny_city, br_wind2, by = "bor_subb", duplicateGeoms = TRUE)
+ggplot(bad_windows[bad_windows$gen == 1 & bad_windows$year == 2017,])+
+  aes(x = bor_subb)+
+  geom_bar(aes(fill = bad), position = "fill")+
+  labs(title = "1st Gen Immigrant Housing with Broken/Boarded Up Windows\n2017", x = "Sub Borough", y = "Proportion")+
+  scale_fill_manual("Broken/Boarded Up Windows", values = c("orangered", "orange", "darkgreen"), labels = c("1" = "Yes",
+                                                                                                   "8" = "Not Reported",
+                                                                                                   "9" = "No"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 8))
 
-for (i in c(1991, seq(1993, 2017, 3))) {
-    map2 <- leaflet(brwd_map2[brwd_map2$year == i & brwd_map2$brwd == 1,]) %>%
-  addTiles() %>% addPolygons(fillColor=~risk.pal(perc_brwd),smoothFactor = 0.5, color = "black", fillOpacity = 0.9,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
-      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", "Broken Windows: ", perc_brwd, "%"))%>%
-  addLegend("topleft", pal=risk.pal, values = ~risk.bins, opacity = 1.0, title = "% of Houses with <br> Broken Windows")
-    saveWidget(map2, "temp.html", selfcontained = FALSE)
-    webshot("temp.html", file = sprintf('brwd_gen2_%02d.png', i), delay = 1, cliprect = NULL)
-  }
 
+ggplot(bad_windows[bad_windows$gen == 2 & bad_windows$year == 1991,])+
+  aes(x = bor_subb)+
+  geom_bar(aes(fill = bad), position = "fill")+
+  labs(title = "2nd Gen Immigrant Housing with Broken/Boarded Up Windows\n1991", x = "Sub Borough", y = "Proportion")+
+  scale_fill_manual("Broken/Boarded Up Windows", values = c("orangered", "orange", "darkgreen"), labels = c("1" = "Yes",
+                                                                                                   "8" = "Not Reported",
+                                                                                                   "9" = "No"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 8))
+
+ggplot(bad_windows[bad_windows$gen == 2 & bad_windows$year == 2017,])+
+  aes(x = bor_subb)+
+  geom_bar(aes(fill = bad), position = "fill")+
+  labs(title = "2nd Gen Immigrant Housing with Broken/Boarded Up Windows\n2017", x = "Sub Borough", y = "Proportion")+
+  scale_fill_manual("Broken/Boarded Up Windows", values = c("orangered", "orange", "darkgreen"), labels = c("1" = "Yes",
+                                                                                                   "8" = "Not Reported",
+                                                                                                   "9" = "No"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 8))
+  
 ```
 
-
-
-```{r}
-#Boarded up windows - 1st Generation Immigrants
-colnames(NY)[8] <- paste0("bowd")
-
-boarded_windows <- NY %>%
-  filter(gen == 1) %>%
-  group_by(bor_subb, year, bowd) %>%
-  summarise(total_bowd = n())
-
-bo_wind <- boarded_windows %>%
-  mutate(sum_bowd = sum(total_bowd))
-bo_wind$perc_bowd <- 100*bo_wind$total_bowd/bo_wind$sum_bowd
-
-bo_map <- merge(ny_city, bo_wind, by = "bor_subb", duplicateGeoms = TRUE)
-
-
-  for (i in c(1991, seq(1993, 2017, 3))) {
-    map <- leaflet(bo_map[bo_map$year == i & bo_map$bowd == 1,]) %>%
-  addTiles() %>% addPolygons(fillColor=~risk.pal(perc_bowd),smoothFactor = 0.5, color = "black", fillOpacity = 0.9,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
-      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", "Boarded Up Windows: ", perc_bowd, "%"))%>%
-  addLegend("topleft", pal=risk.pal, values = ~risk.bins, opacity = 1.0, title = "% of Houses with <br> Boarded Up Windows")
-    saveWidget(map, "temp.html", selfcontained = FALSE)
-    webshot("temp.html", file = sprintf('bowd_gen1_%02d.png', i), delay = 1, cliprect = NULL)
-  }
-
-#Boarded Up windows - 2nd Generation Immigrants
-boarded_windows2 <- NY %>%
-  filter(gen == 2) %>%
-  group_by(bor_subb, year, bowd) %>%
-  summarise(total_bowd = n())
-
-bo_wind2 <- boarded_windows2 %>%
-  mutate(sum_bowd = sum(total_bowd))
-bo_wind2$perc_bowd <- 100*bo_wind2$total_bowd/bo_wind2$sum_bowd
-
-bo_map2 <- merge(ny_city, bo_wind2, by = "bor_subb", duplicateGeoms = TRUE)
-
-
-  for (i in c(1991, seq(1993, 2017, 3))) {
-    map <- leaflet(bo_map2[bo_map2$year == i & bo_map2$bowd == 1,]) %>%
-  addTiles() %>% addPolygons(fillColor=~risk.pal(perc_bowd),smoothFactor = 0.5, color = "black", fillOpacity = 0.9,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
-      bringToFront = TRUE),label = ~paste0(bor_subb, ": ", "Boarded Up Windows: ", perc_bowd, "%"))%>%
-  addLegend("topleft", pal=risk.pal, values = ~risk.bins, opacity = 1.0, title = "% of Houses with <br> Boarded Up Windows")
-    saveWidget(map, "temp.html", selfcontained = FALSE)
-    webshot("temp.html", file = sprintf('bowd_gen2_%02d.png', i), delay = 1, cliprect = NULL)
-  }
-
-```
 
 
 
@@ -227,33 +287,41 @@ bo_map2 <- merge(ny_city, bo_wind2, by = "bor_subb", duplicateGeoms = TRUE)
 #Condition of Building
 
 col <- grDevices::rainbow(12)
-pal.bins <- c(0,5,10,15,20,25,30,35,40,45,50)
-pal <- colorBin(col, bins = pal.bins, na.color = "grey")
+pal.bins <- c(0,10,15,20,30,40,50)
+pal <- colorBin("RdPu", bins = pal.bins)
 
 colnames(NY)[19] <- paste0("bld")
 
-building1 <- NY %>%
-  filter(gen == 1) %>%
-  group_by(bor_subb, year, bld) %>%
-  summarise(total_bld = n())
+bld_map <- merge(ny_city, bldg1, by = "bor_subb", duplicateGeoms = TRUE)
 
-bldg1 <- building1 %>%
-  mutate(sum_bld = sum(total_bld))
-bldg1$perc_bld <- 100*bldg1$total_bld/bldg1$sum_bld
+map1 <- leaflet(bld_map[bld_map$year == 1991 & bld_map$gen == 1 & bld_map$bld == 1,]) %>%
+  addTiles() %>% addPolygons(fillColor=~pal(perc_bld),smoothFactor = 0.5, color = "black", fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(subb_name, ": ", "% of Buildings in Dilapidated/Deteriorating Condition: ", perc_bld))%>%
+  addLegend("topleft", pal=pal, values = ~perc_bld, opacity = 1.0, title = paste0("1991<br>1st Gen", "<br>% of Buildings<br>in Dilapidated/<br>Deteriorating Condition")) %>%
+      setView(lat =  40.730610, lng = -73.935242, zoom = 10)
 
-bld_map1 <- merge(ny_city, bldg1, by = "bor_subb", duplicateGeoms = TRUE)
+map2 <- leaflet(bld_map[bld_map$year == 1991 & bld_map$gen == 2 & bld_map$bld == 1,]) %>%
+  addTiles() %>% addPolygons(fillColor=~pal(perc_bld),smoothFactor = 0.5, color = "black", fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(subb_name, ": ", "% of Buildings in Dilapidated/Deteriorating Condition: ", perc_bld))%>%
+  addLegend("topleft", pal=pal, values = ~perc_bld, opacity = 1.0, title = paste0("1991<br>2nd Gen", "<br>% of Buildings<br>in Dilapidated/<br>Deteriorating Condition")) %>%
+      setView(lat =  40.730610, lng = -73.935242, zoom = 10)
+
+map3 <- leaflet(bld_map[bld_map$year == 2017 & bld_map$gen == 1 & bld_map$bld == 1,]) %>%
+  addTiles() %>% addPolygons(fillColor=~pal(perc_bld),smoothFactor = 0.5, color = "black", fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(subb_name, ": ", "% of Buildings in Dilapidated/Deteriorating Condition: ", perc_bld))%>%
+  addLegend("topleft", pal=pal, values = ~perc_bld, opacity = 1.0, title = paste0("2017<br>1st Gen", "<br>% of Buildings<br>in Dilapidated/<br>Deteriorating Condition")) %>%
+      setView(lat =  40.730610, lng = -73.935242, zoom = 10)
+
+map4 <- leaflet(bld_map[bld_map$year == 2017 & bld_map$gen == 2 & bld_map$bld == 1,]) %>%
+  addTiles() %>% addPolygons(fillColor=~pal(perc_bld),smoothFactor = 0.5, color = "black", fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
+      bringToFront = TRUE),label = ~paste0(subb_name, ": ", "% of Buildings in Dilapidated/Deteriorating Condition: ", perc_bld))%>%
+  addLegend("topleft", pal=pal, values = ~perc_bld, opacity = 1.0, title = paste0("2017<br>2nd Gen", "<br>% of Buildings<br>in Dilapidated/<br>Deteriorating Condition")) %>%
+      setView(lat =  40.730610, lng = -73.935242, zoom = 10)
 
 ```
 
 
 
-
-
-
-
-
-
-#Code for dataset required for maps and code for leaflet maps
 
 
 ```{r}
@@ -268,17 +336,16 @@ NY$India_gen1 <- ifelse(NY$gen == 1 & NY$hhbirth == 19,1,0)
 NY$China_gen2 <- ifelse(NY$gen == 2 & NY$mombirth == 17 | NY$gen == 2 & NY$dadbirth == 17, 1,0)
 NY$Mexico_gen2 <- ifelse(NY$gen == 2 & NY$mombirth == 14 | NY$gen == 2 & NY$dadbirth == 14, 1,0)
 NY$India_gen2 <- ifelse(NY$gen == 2 & NY$mombirth == 19 | NY$gen == 2 & NY$dadbirth == 19, 1,0)
-NY$Count <- rep(1,length(NY$borough)) 
 
 
 avg_income <- NY %>%
   filter(gen == 1 | gen == 2) %>%
-  group_by(year, bor_subb, subb_name, gen) %>%
+  group_by(bor_name, year, bor_subb, subb_name, gen) %>%
   summarise(avg_inc = round(mean(hhinc),2), avg_rent = round(mean(mgrent),2), avg_npr = round(mean(npr),2), avg_room = round(mean(X_24a),2),
             avg_age = round(mean(X_1c),2), gen1_China = sum(China_gen1), gen1_Mexico = sum(Mexico_gen1),
             gen1_India = sum(India_gen1), gen2_China = sum(China_gen2), gen2_Mexico = sum(Mexico_gen2),
-            gen2_India = sum(India_gen2)) %>%
-  mutate(avg_ppr = round(avg_npr/avg_room, 2), log_inc = log(avg_inc), log_rent = log(avg_rent))
+            gen2_India = sum(India_gen2), npr = sum(npr), rooms = sum(X_24a)) %>%
+  mutate(avg_ppr = round(npr/rooms, 2), log_inc = log(avg_inc), log_rent = log(avg_rent))
 
 sub_pop <- NY %>%
   group_by(bor_subb, year)%>%
@@ -415,19 +482,18 @@ avg_ppr_2
 ```{r}
 #Percentage of Chinese Immigrant Population - 1st and 2nd Generation Immigrants
 
-col_imm <- rev(grDevices::rainbow(12))
-pal_imm <- colorBin(col_imm, bins = c(0,5,10,15,20,25,30,35,40,45,50))
+pal_imm <- colorNumeric("viridis", NULL)
 
-perc_china_1 <- leaflet(avg_map[avg_map$year == 1991 & avg_map$gen == 1,]) %>%
+perc_china_1 <- leaflet(avg_map[avg_map$year == 2017 & avg_map$gen == 1,]) %>%
   addTiles() %>% addPolygons(fillColor=~pal_imm(China),smoothFactor = 0.5, color = "black", fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
       bringToFront = TRUE),label = ~paste0(subb_name, ": ", "% of 1st Generation Chinese Immigrants: ", China))%>%
-  addLegend("topleft", pal=pal_imm, values = ~China, opacity = 1.0, title = paste0("1991<br>1st Gen", "<br>% of<br>Chinese Immigrants")) %>%
+  addLegend("topleft", pal=pal_imm, values = ~China, opacity = 1.0, title = paste0("2017<br>1st Gen", "<br>% of<br>Chinese Immigrants")) %>%
       setView(lat =  40.730610, lng = -73.935242, zoom = 10)
 
-perc_china_2 <- leaflet(avg_map[avg_map$year == 1991 & avg_map$gen == 2,]) %>%
+perc_china_2 <- leaflet(avg_map[avg_map$year == 2017 & avg_map$gen == 2,]) %>%
   addTiles() %>% addPolygons(fillColor=~pal_imm(China),smoothFactor = 0.5, color = "black", fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
       bringToFront = TRUE),label = ~paste0(subb_name, ": ", "% of 2nd Generation Chinese Immigrants: ", China))%>%
-  addLegend("topleft", pal=pal_imm, values = ~China, opacity = 1.0, title = paste0("1991<br>2nd Gen", "<br>% of<br>Chinese Immigrants")) %>%
+  addLegend("topleft", pal=pal_imm, values = ~China, opacity = 1.0, title = paste0("2017<br>2nd Gen", "<br>% of<br>Chinese Immigrants")) %>%
       setView(lat =  40.730610, lng = -73.935242, zoom = 10)
 
 perc_china_1
@@ -464,7 +530,7 @@ perc_mex_2
 ```{r}
 #Percentage of Indian Immigrant Population - 1st and 2nd Generation Immigrants
 
-perc_india_1 <- leaflet(avg_map[avg_map$year == 2017 & avg_map$gen == 1,]) %>%
+perc_india_1 <- leaflet(avg_map[avg_map$year == 1991 & avg_map$gen == 1,]) %>%
   addTiles() %>% addPolygons(fillColor=~pal_imm(India),smoothFactor = 0.5, color = "black", fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
       bringToFront = TRUE),label = ~paste0(subb_name, ": ", "% of 1st Generation Indian Immigrants: ", India))%>%
   addLegend("topleft", pal=pal_imm, values = ~India, opacity = 1.0, title = paste0("1991<br>1st Gen", "<br>% of<br>Indian Immigrants")) %>%
@@ -473,7 +539,7 @@ perc_india_1 <- leaflet(avg_map[avg_map$year == 2017 & avg_map$gen == 1,]) %>%
 perc_india_2 <- leaflet(avg_map[avg_map$year == 2017 & avg_map$gen == 2,]) %>%
   addTiles() %>% addPolygons(fillColor=~pal_imm(India),smoothFactor = 0.5, color = "black", fillOpacity = 1,weight=1,highlightOptions = highlightOptions(color = "white", weight = 2.5,
       bringToFront = TRUE),label = ~paste0(subb_name, ": ", "% of 2nd Generation Indian Immigrants: ", India))%>%
-  addLegend("topleft", pal=pal_imm, values = ~India, opacity = 1.0, title = paste0("1991<br>2nd Gen", "<br>% of<br>Indian Immigrants")) %>%
+  addLegend("topleft", pal=pal_imm, values = ~India, opacity = 1.0, title = paste0("2017<br>2nd Gen", "<br>% of<br>Indian Immigrants")) %>%
       setView(lat =  40.730610, lng = -73.935242, zoom = 10)
 
 perc_india_1
@@ -481,4 +547,66 @@ perc_india_2
 ```
 
 
+
+```{r}
+# Dataset for ggplots
+
+poor_windows1 <- NY %>%
+  filter(gen == 1 | gen == 2)%>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarise(sum = sum(poor_win), ncount = sum(Count))
+poor_windows1$perc <- round(100*poor_windows1$sum/poor_windows1$ncount, 2)
+poor_windows1$condition <- "Broken/Boarded Up Windows"
+
+bldg <- NY %>%
+  filter(gen == 1 | gen == 2)%>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarise(sum = sum(building), ncount = sum(Count))
+bldg$perc <- round(100*bldg$sum/bldg$ncount, 2)
+bldg$condition <- "Poor Building Conditions"
+
+rats1 <- NY %>%
+  filter(gen == 1 | gen == 2)%>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarise(sum = sum(rats), ncount = sum(Count))
+rats1$perc <- round(100*rats1$sum/rats1$ncount, 2)
+rats1$condition <- "Presence of Rats"
+  
+kitchen1 <- NY %>%
+  filter(gen == 1 | gen == 2)%>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarise(sum = sum(kitchen), ncount = sum(Count))
+kitchen1$perc <- round(100*kitchen1$sum/kitchen1$ncount, 2)
+kitchen1$condition <- "No/Non-functioning Kitchen"
+
+NY$immigrant <- ifelse(NY$gen == 1 | NY$gen == 2, 1, 0)
+immigrant1 <- NY %>%
+  group_by(bor_name, bor_subb, subb_name, year, gen) %>%
+  summarize(sum = sum(immigrant))
+
+sub_pop <- NY %>%
+  group_by(bor_subb, year)%>%
+  summarise(ncount = sum(Count))
+imm1 <- full_join(immigrant1, sub_pop)
+imm1$perc <- round(100*imm1$sum/imm1$ncount, 2)
+imm1$condition <- "Immigrants"
+
+ggdata1 <- rbind(poor_windows1, bldg)
+ggdata2 <- rbind(ggdata1, rats1)
+ggdata3 <- rbind(ggdata2, kitchen1)
+ggdata <- rbind(ggdata3, imm1)
+ggdata <- as.data.frame(ggdata)
+save(ggdata, file = "ggdata.Rda")
+```
+
+
+
+
+```{r}
+#plotly maps for pop ups
+
+p101<- plot_ly(data = ggdata[ggdata$year == 1991 & ggdata$gen == 1 & ggdata$bor_subb == 101,], x = ~condition, y = ~perc, type = "bar", color = ~condition)%>%
+  layout(yaxis = list(title = 'Percentage of Households'))
+hide_legend(p101)
+```
 
