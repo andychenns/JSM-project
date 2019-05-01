@@ -1050,6 +1050,68 @@ NY$mgrent <- as.numeric(as.character(NY$mgrent))
 subset_mgrent<-NY %>% filter((`mgrent` <= 9997))
 ```
 
+
+```{r}
+NY$hhbirth[NY$hhbirth == 16] <- 15
+NY$dadbirth[NY$dadbirth == 16] <- 15
+NY$mombirth[NY$mombirth == 16] <- 15
+
+NY$hh_birth <- NY$hhbirth
+NY$hh_birth <- as.numeric(as.character(NY$hh_birth))
+NY$hh_birth[NY$hhbirth == 10] <- "USA"
+NY$hh_birth[NY$hhbirth == 11] <- "Puerto Rico"
+NY$hh_birth[NY$hhbirth == 12] <- "Dominican Republic"
+NY$hh_birth[NY$hhbirth == 13] <- "Caribbean (Other than Puerto Rico and Dom.Rep.)"
+NY$hh_birth[NY$hhbirth == 14] <- "Mexico, Central America, South America"
+NY$hh_birth[NY$hhbirth == 15] <- "Europe, Russia, Central Asia, Transcaucasia"
+NY$hh_birth[NY$hhbirth == 17] <- "China, Hong Kong, Taiwan"
+NY$hh_birth[NY$hhbirth == 18] <- "Korea"
+NY$hh_birth[NY$hhbirth == 19] <- "India, Pakistan, Bangladesh"
+NY$hh_birth[NY$hhbirth == 20] <- "Philippines"
+NY$hh_birth[NY$hhbirth == 21] <- "Southeast Asia"
+NY$hh_birth[NY$hhbirth == 22] <- "Other Asia"
+NY$hh_birth[NY$hhbirth == 23] <- "Africa"
+NY$hh_birth[NY$hhbirth == 24] <- "All Other Countries"
+NY$hh_birth[NY$hhbirth == 98] <- "Not Reported"
+
+NY$dad_birth <- NY$dadbirth
+NY$dad_birth <- as.numeric(as.character(NY$dad_birth))
+NY$dad_birth[NY$dadbirth == 10] <- "USA"
+NY$dad_birth[NY$dadbirth == 11] <- "Puerto Rico"
+NY$dad_birth[NY$dadbirth == 12] <- "Dominican Republic"
+NY$dad_birth[NY$dadbirth == 13] <- "Caribbean (Other than Puerto Rico and Dom.Rep.)"
+NY$dad_birth[NY$dadbirth == 14] <- "Mexico, Central America, South America"
+NY$dad_birth[NY$dadbirth == 15] <- "Europe, Russia, Central Asia, Transcaucasia"
+NY$dad_birth[NY$dadbirth == 17] <- "China, Hong Kong, Taiwan"
+NY$dad_birth[NY$dadbirth == 18] <- "Korea"
+NY$dad_birth[NY$dadbirth == 19] <- "India, Pakistan, Bangladesh"
+NY$dad_birth[NY$dadbirth == 20] <- "Philippines"
+NY$dad_birth[NY$dadbirth == 21] <- "Southeast Asia"
+NY$dad_birth[NY$dadbirth == 22] <- "Other Asia"
+NY$dad_birth[NY$dadbirth == 23] <- "Africa"
+NY$dad_birth[NY$dadbirth == 24] <- "All Other Countries"
+NY$dad_birth[NY$dadbirth == 98] <- "Not Reported"
+
+NY$mom_birth <- NY$mombirth
+NY$mom_birth <- as.numeric(as.character(NY$mom_birth))
+NY$mom_birth[NY$mombirth == 10] <- "USA"
+NY$mom_birth[NY$mombirth == 11] <- "Puerto Rico"
+NY$mom_birth[NY$mombirth == 12] <- "Dominican Republic"
+NY$mom_birth[NY$mombirth == 13] <- "Caribbean (Other than Puerto Rico and Dom.Rep.)"
+NY$mom_birth[NY$mombirth == 14] <- "Mexico, Central America, South America"
+NY$mom_birth[NY$mombirth == 15] <- "Europe, Russia, Central Asia, Transcaucasia"
+NY$mom_birth[NY$mombirth == 17] <- "China, Hong Kong, Taiwan"
+NY$mom_birth[NY$mombirth == 18] <- "Korea"
+NY$mom_birth[NY$mombirth == 19] <- "India, Pakistan, Bangladesh"
+NY$mom_birth[NY$mombirth == 20] <- "Philippines"
+NY$mom_birth[NY$mombirth == 21] <- "Southeast Asia"
+NY$mom_birth[NY$mombirth == 22] <- "Other Asia"
+NY$mom_birth[NY$mombirth == 23] <- "Africa"
+NY$mom_birth[NY$mombirth == 24] <- "All Other Countries"
+NY$mom_birth[NY$mombirth == 98] <- "Not Reported"
+```
+
+
 ```{r}
 write.csv(NY, file = 'NY.csv')
 save(NY, file = 'NY.Rda')
