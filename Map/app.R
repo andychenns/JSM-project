@@ -58,17 +58,17 @@ ui <- dashboardPage(skin = "green",
       #First tab
       tabItem(tabName = "project",
               tags$h2(style = "text-align:center;color:#000080", "ASA-JSM Data Challenge 2019",br(),"New York City Housing and Vacancy Survey"),
-              HTML('<img src="nyc.png", height="400px", width="543px"    
-          style="float:left;padding-bottom:50px"/>','<p style="color:black"></p>'),
-              HTML('<img src="immi.jpg", height="400px", width="543px"    
-          style="float:right;padding-bottom:50px"/>','<p style="color:black"></p>'),
+              column(width = 4, align = "left",height = 200, HTML('<img src="nyc.png", height="400px", width="543px"    
+          style="float:left;padding-bottom:30px"/>','<p style="color:black"></p>')),
+              column(width = 4, align = "right", height = 200,HTML('<img src="immi.jpg", height="400px", width="700px"    
+          style="padding-left:150px;padding-bottom:30px"/>','<p style="color:black"></p>')),
               
-              tags$h5(style = "text-align:center","The American Statistical Association (ASA) sponsors an annual Data Challenge as part of its Joint Statistical Meeting (JSM).",
+              column(width = 12, tags$h5(style = "text-align:center","The American Statistical Association (ASA) sponsors an annual Data Challenge as part of its Joint Statistical Meeting (JSM).",
                       "The data challenge for 2019 is on the New York City Housing and Vacancy Survey (NYCHVS).",
                       "The NYCHVS is a triennial survey that is conducted by the Department of Housing Preservation and Development (HPD) in partnership with the U.S. Census Bureau.",
                       "Through this project, we explore changes in the housing conditions of first and second generation immigrants in New York City in the time period of 1991-2017.",
                       "We also make an attempt to model the data to see gentrification trends in sub boroughs of NYC.")
-      ),
+      )),
       tabItem(tabName = "intro",
               tags$h3(style = "text-align:center;color:#000080","Housing Conditions for First and Second Generation Immigrants in New York City"),
               HTML('<img src="nycgif.gif", height="450px", width="800px"    
@@ -98,14 +98,14 @@ ui <- dashboardPage(skin = "green",
     ),
     tabItem(tabName = "gintro",
             tags$h3(style = "text-align:center;color:#000080","Gentrification in New York City"),
-            HTML('<img src="gentr1.jpg", height="400px", width="500px"    
-                 style="float:left;padding-left:180px;padding-bottom:30px;padding-top:30px"/>','<p style="color:black"></p>'),
-            HTML('<img src="gentr2.jpg", height="400px", width="600px"    
-                 style="float:right;padding-right:180px;padding-bottom:30px;padding-top:30px"/>','<p style="color:black"></p>'),
-            tags$h5(style = "text-align:center;padding-bottom:50px","Gentrification is a general term for the arrival of wealthier people in an existing urban district, a related increase in rents and property values, and changes in the district's character and culture.",
+            column(width = 4, align = "left",height = 200, HTML('<img src="gentr1.jpg", height="450px", width="543px"    
+          style="float:left;padding-bottom:30px"/>','<p style="color:black"></p>')),
+            column(width = 4, align = "right", height = 200,HTML('<img src="gentr2.jpg", height="450px", width="700px"    
+          style="padding-left:150px;padding-bottom:30px"/>','<p style="color:black"></p>')),
+            column(width = 12, tags$h5(style = "text-align:center;padding-bottom:50px","Gentrification is a general term for the arrival of wealthier people in an existing urban district, a related increase in rents and property values, and changes in the district's character and culture.",
                     "The term is often used negatively, suggesting the displacement of poor communities by rich outsiders. But the effects of gentrification are complex and contradictory, and its real impact varies.",
-                    "Through this project, we make an attempt at identifying gentrified sub boroughs in NYC through a logistic regression model. The results of the model are visualized through maps in the Gentrification Statistics section."),
-            tags$footer("http://archive.pov.org/flagwars/what-is-gentrification/")),
+                    "Through this project, we make an attempt at identifying gentrified sub boroughs in NYC through a logistic regression model. The results of the model are visualized through maps in the Gentrification Statistics section.")),
+            column(width = 12, tags$footer("http://archive.pov.org/flagwars/what-is-gentrification/"))),
     tabItem(
       tabName = "gentrification",
       h4("Gentrification"),

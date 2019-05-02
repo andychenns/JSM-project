@@ -608,5 +608,13 @@ save(ggdata, file = "ggdata.Rda")
 p101<- plot_ly(data = ggdata[ggdata$year == 1991 & ggdata$gen == 1 & ggdata$bor_subb == 101,], x = ~condition, y = ~perc, type = "bar", color = ~condition)%>%
   layout(yaxis = list(title = 'Percentage of Households'))
 hide_legend(p101)
+
+
+library(stats)
+library(FactoMineR)
+library(psych)
+NY <- as.matrix(NY)
+fac_analysis <- fa(NY,nfactors = 3,rotate = "oblimin",fm="minres")
+print(fac_analysis)
 ```
 
